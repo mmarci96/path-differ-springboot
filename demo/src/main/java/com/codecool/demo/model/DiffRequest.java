@@ -9,17 +9,13 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
 @Table(name = "diff_request")
-@NoArgsConstructor
 @Getter
-@Setter
 public class DiffRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,7 +33,7 @@ public class DiffRequest {
 
     private LocalDateTime createdAt;
 
-    public DiffRequest(String username, LocalFile localFileA, LocalFile localFileB){
+    public DiffRequest(String username, LocalFile localFileA, LocalFile localFileB) {
         this.username = username;
         this.localFileA = localFileA;
         this.localFileB = localFileB;
@@ -69,5 +65,4 @@ public class DiffRequest {
 
         return true;
     }
-
 }
