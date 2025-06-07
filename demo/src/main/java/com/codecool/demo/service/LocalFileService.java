@@ -1,5 +1,6 @@
 package com.codecool.demo.service;
 
+import com.codecool.demo.exception.FileNotFoundException;
 import com.codecool.demo.model.DiffRequest;
 import com.codecool.demo.model.Directory;
 import com.codecool.demo.model.LocalFile;
@@ -11,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.time.LocalDateTime;
 
 @Service
 public class LocalFileService {
@@ -30,36 +30,33 @@ public class LocalFileService {
     }
 
     public boolean compareFiles(String username, String pathA, String pathB) {
-        File fileA = new File(pathA);
-        LocalFile localFileA = processFile(fileA);
-        File fileB = new File(pathB);
-        LocalFile localFileB = processFile(fileB);
+        LocalFile localFileA = processFile(pathA);
+        LocalFile localFileB = processFile(pathB);
         localFileRepository.save(localFileA);
         localFileRepository.save(localFileB);
 
-        DiffRequest request = new DiffRequest();
-        request.setUsername(username);
-        request.setLocalFileA(localFileA);
-        request.setLocalFileB(localFileB);
-        request.setCreatedAt(LocalDateTime.now());
+        DiffRequest request = new DiffRequest(username, localFileA, localFileB);
         diffRequestRepository.save(request);
 
-        return true;
+        return request.areFilesStructurallyEqual(localFileA, localFileB);
     }
 
-    private LocalFile processFile(File file) {
-        printFileDetails(file);
+    private LocalFile processFile(String path) {
+        var file = new File(path);
+        if (!file.isFile() && !file.isDirectory()) {
+            throw new FileNotFoundException("No file at: " + path);
+        }
+
         if (file.isDirectory()) {
             Directory localDir = new Directory();
             localDir.setName(file.getName());
             localDir.setPath(file.getPath());
-
             directoryRepository.save(localDir);
 
-            long dirSize = 0;
             File[] files = file.listFiles();
+            long dirSize = 0;
             for (File currFile : files) {
-                LocalFile currLocalFile = processFile(currFile);
+                LocalFile currLocalFile = processFile(currFile.getPath());
                 currLocalFile.setDirectory(localDir);
                 localFileRepository.save(currLocalFile);
                 dirSize = dirSize + currLocalFile.getSize();
@@ -69,26 +66,13 @@ public class LocalFileService {
             localDir.setSize(dirSize);
             directoryRepository.save(localDir);
             return localDir;
-        } else if (file.isFile()) {
-            LocalFile localFile = new LocalFile();
-            localFile.setName(file.getName());
-            localFile.setPath(file.getPath());
-            localFile.setSize(file.length());
-            localFileRepository.save(localFile);
-            return localFile;
         }
-        return null;
-    }
 
-    private void printFileDetails(File file) {
-        System.out.println("+----------------+--------------------------------------------------+");
-        System.out.printf("| %-14s | %-48s |\n", "Property", "Value");
-        System.out.println("+----------------+--------------------------------------------------+");
-        System.out.printf("| %-14s | %-48s |\n", "Name", file.getName());
-        System.out.printf("| %-14s | %-48s |\n", "Path", file.getPath());
-        System.out.printf("| %-14s | %-48d |\n", "Size (bytes)", file.length());
-        System.out.printf("| %-14s | %-48s |\n", "Is Directory", file.isDirectory());
-        System.out.printf("| %-14s | %-48s |\n", "Is File", file.isFile());
-        System.out.println("+----------------+--------------------------------------------------+");
+        LocalFile localFile = new LocalFile();
+        localFile.setName(file.getName());
+        localFile.setPath(file.getPath());
+        localFile.setSize(file.length());
+        localFileRepository.save(localFile);
+        return localFile;
     }
 }

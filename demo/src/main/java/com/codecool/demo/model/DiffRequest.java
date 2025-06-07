@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "diff_request")
@@ -36,7 +37,37 @@ public class DiffRequest {
 
     private LocalDateTime createdAt;
 
-    public String getDiff() {
-        return "Not checking yet...";
+    public DiffRequest(String username, LocalFile localFileA, LocalFile localFileB){
+        this.username = username;
+        this.localFileA = localFileA;
+        this.localFileB = localFileB;
+        this.createdAt = LocalDateTime.now();
     }
+
+    public boolean areFilesStructurallyEqual(LocalFile fileA, LocalFile fileB) {
+        if (fileA == null || fileB == null) return false;
+
+        if (!fileA.getName().equals(fileB.getName())) return false;
+        if (fileA.getClass() != fileB.getClass()) return false;
+
+        if (!(fileA instanceof Directory)) return true;
+
+        Directory dirA = (Directory) fileA;
+        Directory dirB = (Directory) fileB;
+
+        Set<LocalFile> contentsA = dirA.getLocalFiles();
+        Set<LocalFile> contentsB = dirB.getLocalFiles();
+
+        if (contentsA.size() != contentsB.size()) return false;
+
+        for (LocalFile childA : contentsA) {
+            boolean matchFound =
+                    contentsB.stream()
+                            .anyMatch(childB -> areFilesStructurallyEqual(childA, childB));
+            if (!matchFound) return false;
+        }
+
+        return true;
+    }
+
 }

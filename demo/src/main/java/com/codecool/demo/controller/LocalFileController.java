@@ -23,9 +23,9 @@ public class LocalFileController {
     @GetMapping("/get-diff/{username}")
     public ResponseEntity<?> getDiff(
             @PathVariable String username, @RequestParam String pathA, @RequestParam String pathB) {
-        localFileService.compareFiles(username, pathA, pathB);
+        var isMatch = localFileService.compareFiles(username, pathA, pathB);
 
-        return ResponseEntity.ok(username);
+        return ResponseEntity.ok(isMatch);
     }
 
     @GetMapping("/test")
