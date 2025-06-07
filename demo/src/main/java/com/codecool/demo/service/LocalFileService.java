@@ -18,7 +18,10 @@ public class LocalFileService {
         this.directoryRepository = directoryRepository;
     }
 
-    public void printFiles(String path) {
-        System.out.println(path);
+    public boolean compareFiles(String pathA, String pathB) {
+        System.out.println("PathA: " + pathA);
+        System.out.println("PathB: " + pathB);
+        return true;
     }
+
 }
