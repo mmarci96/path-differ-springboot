@@ -1,6 +1,9 @@
 package com.codecool.demo.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +22,10 @@ public class Directory extends LocalFile {
 
     @OneToMany(mappedBy = "directory", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<LocalFile> localFiles = new HashSet<>();
+
+    public void addLocalFile(LocalFile localFile) {
+        localFiles.add(localFile);
+    }
 
     public Set<Directory> getSubdirectories() {
         return localFiles.stream()
