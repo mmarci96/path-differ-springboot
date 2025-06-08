@@ -83,6 +83,14 @@ loadScripts(document, 'script');</script>
 </span><span class="modifiers">public class </span><span class="element-name type-name-label">LocalFileReaderImpl</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements <a href="LocalFileReader.html" title="interface in com.codecool.demo.util">LocalFileReader</a></span></div>
+<div class="block">Recursive file system reader that persists file/directory structures to the database.
+
+ <p>Key features: - Converts physical file system objects to domain entities - Maintains
+ parent-child relationships for directories - Calculates directory sizes based on nested content -
+ Automatically persists entities through JPA repositories
+
+ <p>Behavior: - For files: Creates LocalFile entity with exact size - For directories: Recursively
+ processes children, calculates total size, and maintains hierarchical relationships</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -96,7 +104,9 @@ implements <a href="LocalFileReader.html" title="interface in com.codecool.demo.
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.codecool.demo.repository.LocalFileRepository,com.codecool.demo.repository.DirectoryRepository)" class="member-name-link">LocalFileReaderImpl</a><wbr>(<a href="../repository/LocalFileRepository.html" title="interface in com.codecool.demo.repository">LocalFileRepository</a>&nbsp;localFileRepository,
  <a href="../repository/DirectoryRepository.html" title="interface in com.codecool.demo.repository">DirectoryRepository</a>&nbsp;directoryRepository)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs the file reader with necessary persistence repositories.</div>
+</div>
 </div>
 </section>
 </li>
@@ -113,7 +123,9 @@ implements <a href="LocalFileReader.html" title="interface in com.codecool.demo.
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../model/LocalFile.html" title="class in com.codecool.demo.model">LocalFile</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#readFileTree(java.lang.String)" class="member-name-link">readFileTree</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;path)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Entry point for reading a file system location.</div>
+</div>
 </div>
 </div>
 </div>
@@ -136,6 +148,12 @@ implements <a href="LocalFileReader.html" title="interface in com.codecool.demo.
 <h3>LocalFileReaderImpl</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">LocalFileReaderImpl</span><wbr><span class="parameters">(<a href="../repository/LocalFileRepository.html" title="interface in com.codecool.demo.repository">LocalFileRepository</a>&nbsp;localFileRepository,
  <a href="../repository/DirectoryRepository.html" title="interface in com.codecool.demo.repository">DirectoryRepository</a>&nbsp;directoryRepository)</span></div>
+<div class="block">Constructs the file reader with necessary persistence repositories.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>localFileRepository</code> - Repository for file entities</dd>
+<dd><code>directoryRepository</code> - Repository for directory entities</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -150,9 +168,16 @@ implements <a href="LocalFileReader.html" title="interface in com.codecool.demo.
 <section class="detail" id="readFileTree(java.lang.String)">
 <h3>readFileTree</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../model/LocalFile.html" title="class in com.codecool.demo.model">LocalFile</a></span>&nbsp;<span class="element-name">readFileTree</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;path)</span></div>
+<div class="block">Entry point for reading a file system location.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="LocalFileReader.html#readFileTree(java.lang.String)">readFileTree</a></code>&nbsp;in interface&nbsp;<code><a href="LocalFileReader.html" title="interface in com.codecool.demo.util">LocalFileReader</a></code></dd>
+<dt>Parameters:</dt>
+<dd><code>path</code> - Absolute path to a valid file system entry</dd>
+<dt>Returns:</dt>
+<dd>Root entity representing the location</dd>
+<dt>Throws:</dt>
+<dd><code><a href="../exception/LocalFileNotFoundException.html" title="class in com.codecool.demo.exception">LocalFileNotFoundException</a></code> - if path doesn't exist</dd>
 </dl>
 </section>
 </li>

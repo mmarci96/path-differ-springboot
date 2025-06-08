@@ -154,13 +154,21 @@ loadScripts(document, 'script');</script>
 <div class="block">Compares two file system paths for a specific user and returns the differences.</div>
 </dd>
 <dt><a href="com/codecool/demo/service/LocalFileService.html#getDiffHandler(java.lang.String,java.lang.String,java.lang.String)" class="member-name-link">getDiffHandler(String, String, String)</a> - Method in class com.codecool.demo.service.<a href="com/codecool/demo/service/LocalFileService.html" title="class in com.codecool.demo.service">LocalFileService</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Processes a new file/directory comparison request:
+
+   Reads file structures from both paths
+   Persists the request with username and file metadata
+   Compares the file structures</div>
+</dd>
 <dt><a href="com/codecool/demo/controller/LocalFileController.html#getHistory()" class="member-name-link">getHistory()</a> - Method in class com.codecool.demo.controller.<a href="com/codecool/demo/controller/LocalFileController.html" title="class in com.codecool.demo.controller">LocalFileController</a></dt>
 <dd>
 <div class="block">Retrieves the history of previous directory comparisons.</div>
 </dd>
 <dt><a href="com/codecool/demo/service/LocalFileService.html#getHistory()" class="member-name-link">getHistory()</a> - Method in class com.codecool.demo.service.<a href="com/codecool/demo/service/LocalFileService.html" title="class in com.codecool.demo.service">LocalFileService</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Retrieves the complete history of file comparison requests.</div>
+</dd>
 <dt><a href="com/codecool/demo/controller/LocalFileController.html#getTest()" class="member-name-link">getTest()</a> - Method in class com.codecool.demo.controller.<a href="com/codecool/demo/controller/LocalFileController.html" title="class in com.codecool.demo.controller">LocalFileController</a></dt>
 <dd>
 <div class="block">Test endpoint for connectivity checks.</div>
@@ -216,15 +224,23 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/codecool/demo/exception/LocalFileNotFoundException.html#%3Cinit%3E(java.lang.String)" class="member-name-link">LocalFileNotFoundException(String)</a> - Constructor for exception com.codecool.demo.exception.<a href="com/codecool/demo/exception/LocalFileNotFoundException.html" title="class in com.codecool.demo.exception">LocalFileNotFoundException</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/codecool/demo/util/LocalFileReader.html" class="type-name-link" title="interface in com.codecool.demo.util">LocalFileReader</a> - Interface in <a href="com/codecool/demo/util/package-summary.html">com.codecool.demo.util</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Provides functionality to read and represent file system structures as hierarchical objects.</div>
+</dd>
 <dt><a href="com/codecool/demo/util/LocalFileReaderImpl.html" class="type-name-link" title="class in com.codecool.demo.util">LocalFileReaderImpl</a> - Class in <a href="com/codecool/demo/util/package-summary.html">com.codecool.demo.util</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Recursive file system reader that persists file/directory structures to the database.</div>
+</dd>
 <dt><a href="com/codecool/demo/util/LocalFileReaderImpl.html#%3Cinit%3E(com.codecool.demo.repository.LocalFileRepository,com.codecool.demo.repository.DirectoryRepository)" class="member-name-link">LocalFileReaderImpl(LocalFileRepository, DirectoryRepository)</a> - Constructor for class com.codecool.demo.util.<a href="com/codecool/demo/util/LocalFileReaderImpl.html" title="class in com.codecool.demo.util">LocalFileReaderImpl</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Constructs the file reader with necessary persistence repositories.</div>
+</dd>
 <dt><a href="com/codecool/demo/repository/LocalFileRepository.html" class="type-name-link" title="interface in com.codecool.demo.repository">LocalFileRepository</a> - Interface in <a href="com/codecool/demo/repository/package-summary.html">com.codecool.demo.repository</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/codecool/demo/service/LocalFileService.html" class="type-name-link" title="class in com.codecool.demo.service">LocalFileService</a> - Class in <a href="com/codecool/demo/service/package-summary.html">com.codecool.demo.service</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Service for comparing directory/file structures and managing comparison history.</div>
+</dd>
 <dt><a href="com/codecool/demo/service/LocalFileService.html#%3Cinit%3E(com.codecool.demo.util.LocalFileReader,com.codecool.demo.repository.DiffRequestRepository)" class="member-name-link">LocalFileService(LocalFileReader, DiffRequestRepository)</a> - Constructor for class com.codecool.demo.service.<a href="com/codecool/demo/service/LocalFileService.html" title="class in com.codecool.demo.service">LocalFileService</a></dt>
 <dd>&nbsp;</dd>
 </dl>
@@ -265,9 +281,13 @@ loadScripts(document, 'script');</script>
 <h2 class="title" id="I:R">R</h2>
 <dl class="index">
 <dt><a href="com/codecool/demo/util/LocalFileReader.html#readFileTree(java.lang.String)" class="member-name-link">readFileTree(String)</a> - Method in interface com.codecool.demo.util.<a href="com/codecool/demo/util/LocalFileReader.html" title="interface in com.codecool.demo.util">LocalFileReader</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Reads and parses a file system location into a hierarchical representation.</div>
+</dd>
 <dt><a href="com/codecool/demo/util/LocalFileReaderImpl.html#readFileTree(java.lang.String)" class="member-name-link">readFileTree(String)</a> - Method in class com.codecool.demo.util.<a href="com/codecool/demo/util/LocalFileReaderImpl.html" title="class in com.codecool.demo.util">LocalFileReaderImpl</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Entry point for reading a file system location.</div>
+</dd>
 <dt><a href="com/codecool/demo/controller/LocalFileController.html#redirectToJavadoc()" class="member-name-link">redirectToJavadoc()</a> - Method in class com.codecool.demo.controller.<a href="com/codecool/demo/controller/LocalFileController.html" title="class in com.codecool.demo.controller">LocalFileController</a></dt>
 <dd>
 <div class="block">Endpoint to fetch the java docs of the app.</div>

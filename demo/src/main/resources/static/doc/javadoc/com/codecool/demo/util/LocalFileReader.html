@@ -77,6 +77,8 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">LocalFileReader</span></div>
+<div class="block">Provides functionality to read and represent file system structures as hierarchical objects.
+ Implementations should recursively traverse directories and create corresponding domain models.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -93,7 +95,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../model/LocalFile.html" title="class in com.codecool.demo.model">LocalFile</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#readFileTree(java.lang.String)" class="member-name-link">readFileTree</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;path)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Reads and parses a file system location into a hierarchical representation.</div>
+</div>
 </div>
 </div>
 </div>
@@ -112,6 +116,15 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="readFileTree(java.lang.String)">
 <h3>readFileTree</h3>
 <div class="member-signature"><span class="return-type"><a href="../model/LocalFile.html" title="class in com.codecool.demo.model">LocalFile</a></span>&nbsp;<span class="element-name">readFileTree</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;path)</span></div>
+<div class="block">Reads and parses a file system location into a hierarchical representation.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>path</code> - Absolute path to a valid file system location (file or directory)</dd>
+<dt>Returns:</dt>
+<dd>Root <a href="../model/LocalFile.html" title="class in com.codecool.demo.model"><code>LocalFile</code></a> node representing the location</dd>
+<dt>Throws:</dt>
+<dd><code>LocalFileNotFoundException</code> - If the path doesn't exist in the file system</dd>
+</dl>
 </section>
 </li>
 </ul>

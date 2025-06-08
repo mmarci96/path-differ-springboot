@@ -78,6 +78,12 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="annotations">@Service
 </span><span class="modifiers">public class </span><span class="element-name type-name-label">LocalFileService</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
+<div class="block">Service for comparing directory/file structures and managing comparison history. Handles reading
+ file trees, persisting comparison requests, and categorizing differences.
+
+   Retrieve full comparison history
+   Process new comparison requests with automatic persistence
+   Compare two file structures (files/directories) and categorize differences</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -110,10 +116,18 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDiffHandler(java.lang.String,java.lang.String,java.lang.String)" class="member-name-link">getDiffHandler</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;username,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;pathA,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;pathB)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Processes a new file/directory comparison request:
+
+   Reads file structures from both paths
+   Persists the request with username and file metadata
+   Compares the file structures</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../dto/HistoryEntryDTO.html" title="class in com.codecool.demo.dto">HistoryEntryDTO</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getHistory()" class="member-name-link">getHistory</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Retrieves the complete history of file comparison requests.</div>
+</div>
 </div>
 </div>
 </div>
@@ -151,6 +165,17 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getHistory()">
 <h3>getHistory</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../dto/HistoryEntryDTO.html" title="class in com.codecool.demo.dto">HistoryEntryDTO</a>&gt;</span>&nbsp;<span class="element-name">getHistory</span>()</div>
+<div class="block">Retrieves the complete history of file comparison requests.
+
+ Each history entry contains:
+   - Username of the requester
+   - Full comparison results (<a href="../dto/DiffResponseDTO.html" title="class in com.codecool.demo.dto"><code>DiffResponseDTO</code></a>)
+   - Timestamp of the request</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>List of <a href="../dto/HistoryEntryDTO.html" title="class in com.codecool.demo.dto"><code>HistoryEntryDTO</code></a> objects in chronological order (newest first based on
+     repository ordering)</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -159,6 +184,24 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../dto/DiffResponseDTO.html" title="class in com.codecool.demo.dto">DiffResponseDTO</a></span>&nbsp;<span class="element-name">getDiffHandler</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;username,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;pathA,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;pathB)</span></div>
+<div class="block">Processes a new file/directory comparison request:
+
+   Reads file structures from both paths
+   Persists the request with username and file metadata
+   Compares the file structures</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>username</code> - Identifier of the user initiating the request</dd>
+<dd><code>pathA</code> - Absolute path to first directory/file</dd>
+<dd><code>pathB</code> - Absolute path to second directory/file</dd>
+<dt>Returns:</dt>
+<dd><a href="../dto/DiffResponseDTO.html" title="class in com.codecool.demo.dto"><code>DiffResponseDTO</code></a> containing:
+       - Base paths compared
+       - Files unique to each location
+       - Files common to both locations (with matching sizes)</dd>
+<dt>Throws:</dt>
+<dd><code>FileSystemAccessException</code> - If paths are invalid/unreadable (handled by fileReader)</dd>
+</dl>
 </section>
 </li>
 </ul>
