@@ -1,5 +1,6 @@
 package com.codecool.demo.service;
 
+import com.codecool.demo.dto.DiffResponseDTO;
 import com.codecool.demo.exception.LocalFileNotFoundException;
 import com.codecool.demo.model.DiffEntry;
 import com.codecool.demo.model.DiffRequest;
@@ -33,7 +34,7 @@ public class LocalFileService {
         this.diffRequestRepository = diffRequestRepository;
     }
 
-    public boolean compareFiles(String username, String pathA, String pathB) {
+    public DiffResponseDTO compareFiles(String username, String pathA, String pathB) {
         LocalFile localFileA = processFile(pathA);
         LocalFile localFileB = processFile(pathB);
         localFileRepository.save(localFileA);
@@ -42,7 +43,10 @@ public class LocalFileService {
         DiffRequest diffRequest = new DiffRequest(username, localFileA, localFileB);
         collectDifferences(localFileA, localFileB, diffRequest, "");
         diffRequestRepository.save(diffRequest);
-        return diffRequest.getDifferences().isEmpty();
+
+        var differencies =
+                diffRequest.getDifferences().stream().map(DiffEntry::toDiffEntryDTO).toList();
+        return new DiffResponseDTO(pathA, pathB, differencies);
     }
 
     private LocalFile processFile(String path) {
@@ -83,7 +87,7 @@ public class LocalFileService {
     public void collectDifferences(
             LocalFile fileA, LocalFile fileB, DiffRequest request, String relativePath) {
         if (handleMissingFile(fileA, fileB, request, relativePath)) return;
-        if (handleTypeMismatch(fileA, fileB, request, relativePath)) return;
+        if (handleFileMismatch(fileA, fileB, request, relativePath)) return;
 
         if (fileA instanceof Directory dirA && fileB instanceof Directory dirB) {
             compareDirectories(dirA, dirB, request, relativePath);
@@ -107,16 +111,25 @@ public class LocalFileService {
         return false;
     }
 
-    private boolean handleTypeMismatch(
+    private boolean handleFileMismatch(
             LocalFile fileA, LocalFile fileB, DiffRequest request, String path) {
-        if (!fileA.getName().equals(fileB.getName()) || fileA.getClass() != fileB.getClass()) {
+        if (fileA.getClass() != fileB.getClass()) {
             DiffEntry diff = new DiffEntry();
             diff.setPath(path);
             diff.setType("TypeMismatch");
-            diff.setMessage("Name or type mismatch: " + fileA.getName() + " vs " + fileB.getName());
+            diff.setMessage("Type mismatch: " + fileA.getName() + " vs " + fileB.getName());
             request.addDifference(diff);
             return true;
         }
+        if (!fileA.getName().equals(fileB.getName())) {
+            DiffEntry diff = new DiffEntry();
+            diff.setPath(path);
+            diff.setType("NameMismatch");
+            diff.setMessage("Name mismatch: " + fileA.getName() + " vs " + fileB.getName());
+            request.addDifference(diff);
+            return true;
+        }
+
         return false;
     }
 

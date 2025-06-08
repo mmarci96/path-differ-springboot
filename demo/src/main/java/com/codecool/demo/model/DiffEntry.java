@@ -1,5 +1,7 @@
 package com.codecool.demo.model;
 
+import com.codecool.demo.dto.DiffEntryDTO;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,4 +32,8 @@ public class DiffEntry {
     @ManyToOne
     @JoinColumn(name = "diff_request_id", nullable = false)
     private DiffRequest diffRequest;
+
+    public DiffEntryDTO toDiffEntryDTO() {
+        return new DiffEntryDTO(this.path, this.type, this.message);
+    }
 }
