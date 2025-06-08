@@ -1,6 +1,7 @@
 package com.codecool.demo.service;
 
 import com.codecool.demo.dto.DiffResponseDTO;
+import com.codecool.demo.dto.HistoryEntryDTO;
 import com.codecool.demo.exception.LocalFileNotFoundException;
 import com.codecool.demo.model.DiffEntry;
 import com.codecool.demo.model.DiffRequest;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,6 +34,10 @@ public class LocalFileService {
         this.localFileRepository = localFileRepository;
         this.directoryRepository = directoryRepository;
         this.diffRequestRepository = diffRequestRepository;
+    }
+
+    public List<HistoryEntryDTO> getHistory() {
+        return diffRequestRepository.findAll().stream().map(DiffRequest::toHistoryDTO).toList();
     }
 
     public DiffResponseDTO compareFiles(String username, String pathA, String pathB) {

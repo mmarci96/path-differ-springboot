@@ -1,5 +1,8 @@
 package com.codecool.demo.model;
 
+import com.codecool.demo.dto.DiffResponseDTO;
+import com.codecool.demo.dto.HistoryEntryDTO;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,6 +14,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -19,6 +23,7 @@ import java.util.Set;
 @Entity
 @Table(name = "diff_request")
 @Getter
+@NoArgsConstructor
 public class DiffRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,5 +54,14 @@ public class DiffRequest {
     public void addDifference(DiffEntry entry) {
         entry.setDiffRequest(this);
         differences.add(entry);
+    }
+
+    public HistoryEntryDTO toHistoryDTO() {
+        var diffEntryDTOs = differences.stream().map(DiffEntry::toDiffEntryDTO).toList();
+
+        return new HistoryEntryDTO(
+                username,
+                new DiffResponseDTO(localFileA.getPath(), localFileB.getPath(), diffEntryDTOs),
+                createdAt);
     }
 }

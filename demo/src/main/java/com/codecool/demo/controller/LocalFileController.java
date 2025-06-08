@@ -28,6 +28,11 @@ public class LocalFileController {
         return ResponseEntity.ok(isMatch);
     }
 
+    @GetMapping("/history")
+    public ResponseEntity<?> getHistory() {
+        return ResponseEntity.ok(localFileService.getHistory());
+    }
+
     @GetMapping("/test")
     public ResponseEntity<?> getTest() {
         return ResponseEntity.ok("OK");
