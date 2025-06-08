@@ -82,46 +82,62 @@ public class LocalFileService {
 
     public void collectDifferences(
             LocalFile fileA, LocalFile fileB, DiffRequest request, String relativePath) {
-        if (fileA == null && fileB == null) return;
+        if (handleMissingFile(fileA, fileB, request, relativePath)) return;
+        if (handleTypeMismatch(fileA, fileB, request, relativePath)) return;
+
+        if (fileA instanceof Directory dirA && fileB instanceof Directory dirB) {
+            compareDirectories(dirA, dirB, request, relativePath);
+        } else {
+            compareFiles(fileA, fileB, request, relativePath);
+        }
+    }
+
+    private boolean handleMissingFile(
+            LocalFile fileA, LocalFile fileB, DiffRequest request, String path) {
+        if (fileA == null && fileB == null) return true;
 
         if (fileA == null || fileB == null) {
             DiffEntry diff = new DiffEntry();
-            diff.setPath(relativePath);
+            diff.setPath(path);
             diff.setType("Missing");
             diff.setMessage(fileA == null ? "Missing in A" : "Missing in B");
             request.addDifference(diff);
-            return;
+            return true;
         }
+        return false;
+    }
 
+    private boolean handleTypeMismatch(
+            LocalFile fileA, LocalFile fileB, DiffRequest request, String path) {
         if (!fileA.getName().equals(fileB.getName()) || fileA.getClass() != fileB.getClass()) {
             DiffEntry diff = new DiffEntry();
-            diff.setPath(relativePath);
+            diff.setPath(path);
             diff.setType("TypeMismatch");
             diff.setMessage("Name or type mismatch: " + fileA.getName() + " vs " + fileB.getName());
             request.addDifference(diff);
-            return;
+            return true;
         }
+        return false;
+    }
 
-        if (!(fileA instanceof Directory)) {
-            if (fileA.getSize() != fileB.getSize()) {
-                DiffEntry diff = new DiffEntry();
-                diff.setPath(relativePath);
-                diff.setType("SizeMismatch");
-                diff.setMessage("Size differs: " + fileA.getSize() + " vs " + fileB.getSize());
-                request.addDifference(diff);
-            }
-            return;
+    private void compareFiles(LocalFile fileA, LocalFile fileB, DiffRequest request, String path) {
+        if (fileA.getSize() != fileB.getSize()) {
+            DiffEntry diff = new DiffEntry();
+            diff.setPath(path);
+            diff.setType("SizeMismatch");
+            diff.setMessage("Size differs: " + fileA.getSize() + " vs " + fileB.getSize());
+            request.addDifference(diff);
         }
+    }
 
-        Directory dirA = (Directory) fileA;
-        Directory dirB = (Directory) fileB;
-
+    private void compareDirectories(
+            Directory dirA, Directory dirB, DiffRequest request, String basePath) {
         Map<String, LocalFile> mapB =
                 dirB.getLocalFiles().stream().collect(Collectors.toMap(LocalFile::getName, f -> f));
 
         for (LocalFile childA : dirA.getLocalFiles()) {
+            String childPath = basePath + "/" + childA.getName();
             LocalFile childB = mapB.get(childA.getName());
-            String childPath = relativePath + "/" + childA.getName();
             collectDifferences(childA, childB, request, childPath);
         }
 
@@ -131,7 +147,7 @@ public class LocalFileService {
         for (LocalFile childB : dirB.getLocalFiles()) {
             if (!namesInA.contains(childB.getName())) {
                 DiffEntry diff = new DiffEntry();
-                diff.setPath(relativePath + "/" + childB.getName());
+                diff.setPath(basePath + "/" + childB.getName());
                 diff.setType("ExtraInB");
                 diff.setMessage("File exists in B but not in A");
                 request.addDifference(diff);
