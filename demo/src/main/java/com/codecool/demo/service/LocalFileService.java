@@ -1,6 +1,7 @@
 package com.codecool.demo.service;
 
 import com.codecool.demo.exception.LocalFileNotFoundException;
+import com.codecool.demo.model.DiffEntry;
 import com.codecool.demo.model.DiffRequest;
 import com.codecool.demo.model.Directory;
 import com.codecool.demo.model.LocalFile;
@@ -12,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class LocalFileService {
@@ -36,9 +40,9 @@ public class LocalFileService {
         localFileRepository.save(localFileB);
 
         DiffRequest diffRequest = new DiffRequest(username, localFileA, localFileB);
+        collectDifferences(localFileA, localFileB, diffRequest, "");
         diffRequestRepository.save(diffRequest);
-        return false;
-        // return areFilesStructurallyEqual(localFileA, localFileB);
+        return diffRequest.getDifferences().isEmpty();
     }
 
     private LocalFile processFile(String path) {
@@ -75,30 +79,63 @@ public class LocalFileService {
         localFileRepository.save(localFile);
         return localFile;
     }
-    //
-    // public boolean areFilesStructurallyEqual(LocalFile fileA, LocalFile fileB) {
-    //     if (fileA == null || fileB == null) return false;
-    //
-    //     if (!fileA.getName().equals(fileB.getName())) return false;
-    //     if (fileA.getClass() != fileB.getClass()) return false;
-    //
-    //     if (!(fileA instanceof Directory)) return true;
-    //
-    //     Directory dirA = (Directory) fileA;
-    //     Directory dirB = (Directory) fileB;
-    //
-    //     Set<LocalFile> contentsA = dirA.getLocalFiles();
-    //     Set<LocalFile> contentsB = dirB.getLocalFiles();
-    //
-    //     if (contentsA.size() != contentsB.size()) return false;
-    //
-    //     for (LocalFile childA : contentsA) {
-    //         boolean matchFound =
-    //                 contentsB.stream()
-    //                         .anyMatch(childB -> areFilesStructurallyEqual(childA, childB));
-    //         if (!matchFound) return false;
-    //     }
-    //
-    //     return true;
-    // }
+
+    public void collectDifferences(
+            LocalFile fileA, LocalFile fileB, DiffRequest request, String relativePath) {
+        if (fileA == null && fileB == null) return;
+
+        if (fileA == null || fileB == null) {
+            DiffEntry diff = new DiffEntry();
+            diff.setPath(relativePath);
+            diff.setType("Missing");
+            diff.setMessage(fileA == null ? "Missing in A" : "Missing in B");
+            request.addDifference(diff);
+            return;
+        }
+
+        if (!fileA.getName().equals(fileB.getName()) || fileA.getClass() != fileB.getClass()) {
+            DiffEntry diff = new DiffEntry();
+            diff.setPath(relativePath);
+            diff.setType("TypeMismatch");
+            diff.setMessage("Name or type mismatch: " + fileA.getName() + " vs " + fileB.getName());
+            request.addDifference(diff);
+            return;
+        }
+
+        if (!(fileA instanceof Directory)) {
+            if (fileA.getSize() != fileB.getSize()) {
+                DiffEntry diff = new DiffEntry();
+                diff.setPath(relativePath);
+                diff.setType("SizeMismatch");
+                diff.setMessage("Size differs: " + fileA.getSize() + " vs " + fileB.getSize());
+                request.addDifference(diff);
+            }
+            return;
+        }
+
+        Directory dirA = (Directory) fileA;
+        Directory dirB = (Directory) fileB;
+
+        Map<String, LocalFile> mapB =
+                dirB.getLocalFiles().stream().collect(Collectors.toMap(LocalFile::getName, f -> f));
+
+        for (LocalFile childA : dirA.getLocalFiles()) {
+            LocalFile childB = mapB.get(childA.getName());
+            String childPath = relativePath + "/" + childA.getName();
+            collectDifferences(childA, childB, request, childPath);
+        }
+
+        Set<String> namesInA =
+                dirA.getLocalFiles().stream().map(LocalFile::getName).collect(Collectors.toSet());
+
+        for (LocalFile childB : dirB.getLocalFiles()) {
+            if (!namesInA.contains(childB.getName())) {
+                DiffEntry diff = new DiffEntry();
+                diff.setPath(relativePath + "/" + childB.getName());
+                diff.setType("ExtraInB");
+                diff.setMessage("File exists in B but not in A");
+                request.addDifference(diff);
+            }
+        }
+    }
 }
