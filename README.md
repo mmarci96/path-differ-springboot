@@ -1,5 +1,7 @@
-# Path Differ Spring-Boot
-A REST API to compare paths save results to database and serving the history of past requests.
+# Path Differ Spring-Boot  
+![image](https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+![image](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![image](https://img.shields.io/badge/gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white)
 
 
 ## Overview
@@ -7,11 +9,9 @@ This project provides a REST API for comparing file paths and tracking compariso
 Spring Boot built with Gradle and connecting to PostgreSQL database.  
 
 ## Requirements
-You must have Podman or Docker nstalled to run this application. 
+![image](https://img.shields.io/badge/podman-892CA0?style=for-the-badge&logo=podman&logoColor=white)
 
-![image]({https://img.shields.io/badge/podman-892CA0?style=for-the-badge&logo=podman&logoColor=white})
-
-![image]({https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white})
+You must have Podman or Docker installed to run this application. 
 
 ## Starting the app
 1. Run the following command to setup the runtime environment with default variables:
@@ -46,7 +46,12 @@ make logs
 ```
 
 ## Features
-Get-Diff:
+
+### Java Docs
+GET /doc
+For javadocks open the browser at <a href="http://localhost:8080/doc">http://localhost:8080/doc</a>.
+
+### Get-Diff:
 GET /api/files/get-diff/{username}?pathA=...&pathB=...
 Example response:
 ```json
@@ -72,7 +77,7 @@ Example response:
   ]
 }
 ```
-History:
+### History:
 GET /api/files/history
 Example response:
 ```json
@@ -98,7 +103,4 @@ Example response:
   },
 ]
 ```
-GET /doc
-For javadocks open the browser at ```http://localhost:8080/doc```.
-
 
