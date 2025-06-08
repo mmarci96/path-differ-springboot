@@ -1,5 +1,4 @@
-
-FROM gradle:8-jdk17 AS build
+FROM docker.io/gradle:8-jdk17 AS build
 
 WORKDIR /app
 
@@ -12,7 +11,7 @@ COPY src ./src
 
 RUN ./gradlew clean build
 
-FROM eclipse-temurin:17-jdk-alpine
+FROM docker.io/library/eclipse-temurin:17-jdk-alpine
 
 WORKDIR /app
 
