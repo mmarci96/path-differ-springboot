@@ -13,9 +13,15 @@ RUN ./gradlew clean build
 
 FROM docker.io/library/eclipse-temurin:17-jdk-alpine
 
+RUN addgroup -S spring && adduser -S -G spring spring
+
 WORKDIR /app
 
 COPY --from=build /app/build/libs/demo-*.jar app.jar
+
+RUN chown -R spring:spring /app
+
+USER spring
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
 
