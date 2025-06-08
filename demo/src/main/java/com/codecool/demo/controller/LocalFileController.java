@@ -73,6 +73,6 @@ public class LocalFileController {
      */
     @GetMapping("/doc")
     public RedirectView redirectToJavadoc() {
-        return new RedirectView("/doc/javadoc/index.html");
+        return new RedirectView("/docs/javadoc/index.html");
     }
 }

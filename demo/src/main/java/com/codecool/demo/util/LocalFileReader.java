@@ -1,5 +1,6 @@
 package com.codecool.demo.util;
 
+import com.codecool.demo.exception.LocalFileNotFoundException;
 import com.codecool.demo.model.LocalFile;
 
 /**

@@ -3,6 +3,7 @@ package com.codecool.demo.service;
 import com.codecool.demo.dto.DiffResponseDTO;
 import com.codecool.demo.dto.EntryDTO;
 import com.codecool.demo.dto.HistoryEntryDTO;
+import com.codecool.demo.exception.LocalFileNotFoundException;
 import com.codecool.demo.model.DiffRequest;
 import com.codecool.demo.model.Directory;
 import com.codecool.demo.model.LocalFile;
@@ -30,6 +31,13 @@ public class LocalFileService {
     private final LocalFileReader fileReader;
     private final DiffRequestRepository diffRequestRepository;
 
+    /**
+     * LocalFileService constructor.
+     *
+     * @param fileReader {@link LocalFileReader} to parse path to data.
+     * @param diffRequestRepository {@link DiffRequestRepository} repository to handle persistence
+     *     for requests.
+     */
     @Autowired
     public LocalFileService(
             LocalFileReader fileReader, DiffRequestRepository diffRequestRepository) {
@@ -38,9 +46,9 @@ public class LocalFileService {
     }
 
     /**
-     * Retrieves the complete history of file comparison requests.
-     * Each history entry contains: - Username of the requester - Full comparison results ({@link
-     * DiffResponseDTO}) - Timestamp of the request
+     * Retrieves the complete history of file comparison requests. Each history entry contains: -
+     * Username of the requester - Full comparison results ({@link DiffResponseDTO}) - Timestamp of
+     * the request
      *
      * @return List of {@link HistoryEntryDTO} objects in chronological order (newest first based on
      *     repository ordering)
@@ -63,16 +71,15 @@ public class LocalFileService {
     }
 
     /**
-     * Processes a new file/directory comparison request:
-     * Reads file structures from both paths Persists the request with username and file metadata
-     * Compares the file structures
+     * Processes a new file/directory comparison request: Reads file structures from both paths
+     * Persists the request with username and file metadata Compares the file structures
      *
      * @param username Identifier of the user initiating the request
      * @param pathA Absolute path to first directory/file
      * @param pathB Absolute path to second directory/file
      * @return {@link DiffResponseDTO} containing: - Base paths compared - Files unique to each
      *     location - Files common to both locations (with matching sizes)
-     * @throws FileSystemAccessException If paths are invalid/unreadable (handled by fileReader)
+     * @throws LocalFileNotFoundException If paths are invalid/unreadable (handled by fileReader)
      */
     public DiffResponseDTO getDiffHandler(String username, String pathA, String pathB) {
         LocalFile localFileA = fileReader.readFileTree(pathA);

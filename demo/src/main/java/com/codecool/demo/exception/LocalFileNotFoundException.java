@@ -1,5 +1,6 @@
 package com.codecool.demo.exception;
 
+/** Exception extending RuntimeException */
 public class LocalFileNotFoundException extends RuntimeException {
     /**
      * Custom Exception to handle LocalFile not found on path.
