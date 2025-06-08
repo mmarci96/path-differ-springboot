@@ -1,0 +1,8 @@
+com.codecool.demo
+com.codecool.demo.controller
+com.codecool.demo.dto
+com.codecool.demo.exception
+com.codecool.demo.model
+com.codecool.demo.repository
+com.codecool.demo.service
+com.codecool.demo.util
