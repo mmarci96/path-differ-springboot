@@ -7,7 +7,11 @@ This project provides a REST API for comparing file paths and tracking compariso
 Spring Boot built with Gradle and connecting to PostgreSQL database.  
 
 ## Requirements
-You must have Podman ![image]({https://img.shields.io/badge/podman-892CA0?style=for-the-badge&logo=podman&logoColor=white}) or Docker ![image]({https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white}) installed to run this application. 
+You must have Podman or Docker nstalled to run this application. 
+
+![image]({https://img.shields.io/badge/podman-892CA0?style=for-the-badge&logo=podman&logoColor=white})
+
+![image]({https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white})
 
 ## Starting the app
 1. Run the following command to setup the runtime environment with default variables:
