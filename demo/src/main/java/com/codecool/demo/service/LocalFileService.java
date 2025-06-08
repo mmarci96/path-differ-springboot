@@ -1,6 +1,6 @@
 package com.codecool.demo.service;
 
-import com.codecool.demo.exception.FileNotFoundException;
+import com.codecool.demo.exception.LocalFileNotFoundException;
 import com.codecool.demo.model.DiffRequest;
 import com.codecool.demo.model.Directory;
 import com.codecool.demo.model.LocalFile;
@@ -35,16 +35,16 @@ public class LocalFileService {
         localFileRepository.save(localFileA);
         localFileRepository.save(localFileB);
 
-        DiffRequest request = new DiffRequest(username, localFileA, localFileB);
-        diffRequestRepository.save(request);
-
-        return request.areFilesStructurallyEqual(localFileA, localFileB);
+        DiffRequest diffRequest = new DiffRequest(username, localFileA, localFileB);
+        diffRequestRepository.save(diffRequest);
+        return false;
+        // return areFilesStructurallyEqual(localFileA, localFileB);
     }
 
     private LocalFile processFile(String path) {
         var file = new File(path);
         if (!file.isFile() && !file.isDirectory()) {
-            throw new FileNotFoundException("No file at: " + path);
+            throw new LocalFileNotFoundException("No file at: " + path);
         }
 
         if (file.isDirectory()) {
@@ -75,4 +75,30 @@ public class LocalFileService {
         localFileRepository.save(localFile);
         return localFile;
     }
+    //
+    // public boolean areFilesStructurallyEqual(LocalFile fileA, LocalFile fileB) {
+    //     if (fileA == null || fileB == null) return false;
+    //
+    //     if (!fileA.getName().equals(fileB.getName())) return false;
+    //     if (fileA.getClass() != fileB.getClass()) return false;
+    //
+    //     if (!(fileA instanceof Directory)) return true;
+    //
+    //     Directory dirA = (Directory) fileA;
+    //     Directory dirB = (Directory) fileB;
+    //
+    //     Set<LocalFile> contentsA = dirA.getLocalFiles();
+    //     Set<LocalFile> contentsB = dirB.getLocalFiles();
+    //
+    //     if (contentsA.size() != contentsB.size()) return false;
+    //
+    //     for (LocalFile childA : contentsA) {
+    //         boolean matchFound =
+    //                 contentsB.stream()
+    //                         .anyMatch(childB -> areFilesStructurallyEqual(childA, childB));
+    //         if (!matchFound) return false;
+    //     }
+    //
+    //     return true;
+    // }
 }
