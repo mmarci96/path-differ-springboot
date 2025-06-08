@@ -18,8 +18,6 @@ You must have Podman or Docker installed to run this application.
 
 ```bash
 cp .env.sample .env 
-
-export $(grep -v '^#' .env | xargs)
 ```
 
 2. Start the application with the following command:
