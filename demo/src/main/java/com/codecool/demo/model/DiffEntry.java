@@ -1,11 +1,11 @@
 package com.codecool.demo.model;
 
+import com.codecool.demo.dto.DiffEntryDTO;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -15,22 +15,25 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
-@Table(name = "local_files")
-@NoArgsConstructor
+@Table(name = "diff_entries")
 @Getter
 @Setter
-public class LocalFile {
+@NoArgsConstructor
+public class DiffEntry {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
     private String path;
-    private long size;
+    private String type;
+    private String message;
 
     @ManyToOne
-    @JoinColumn(name = "directory_id")
-    private Directory directory;
+    @JoinColumn(name = "diff_request_id", nullable = false)
+    private DiffRequest diffRequest;
+
+    public DiffEntryDTO toDiffEntryDTO() {
+        return new DiffEntryDTO(this.path, this.type, this.message);
+    }
 }
