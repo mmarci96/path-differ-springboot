@@ -27,6 +27,7 @@ public class Directory extends LocalFile {
     private Set<LocalFile> localFiles = new HashSet<>();
 
     public void addLocalFile(LocalFile localFile) {
+        localFile.setDirectory(this);
         localFiles.add(localFile);
     }
 
