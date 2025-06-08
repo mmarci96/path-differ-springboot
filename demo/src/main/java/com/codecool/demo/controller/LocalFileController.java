@@ -23,7 +23,7 @@ public class LocalFileController {
     @GetMapping("/get-diff/{username}")
     public ResponseEntity<?> getDiff(
             @PathVariable String username, @RequestParam String pathA, @RequestParam String pathB) {
-        var isMatch = localFileService.compareFiles(username, pathA, pathB);
+        var isMatch = localFileService.getDiffHandler(username, pathA, pathB);
 
         return ResponseEntity.ok(isMatch);
     }

@@ -9,9 +9,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "directories")
@@ -27,10 +30,16 @@ public class Directory extends LocalFile {
         localFiles.add(localFile);
     }
 
-    public Set<Directory> getSubdirectories() {
-        return localFiles.stream()
-                .filter(file -> file instanceof Directory)
-                .map(file -> (Directory) file)
-                .collect(Collectors.toSet());
+    public Map<String, LocalFile> getAllNestedFilesWithRelativePaths(String prefix) {
+        Map<String, LocalFile> result = new HashMap<>();
+        for (LocalFile file : localFiles) {
+            Path relPath = Paths.get(prefix).resolve(file.getName());
+            if (file instanceof Directory dir) {
+                result.putAll(dir.getAllNestedFilesWithRelativePaths(relPath.toString()));
+            } else {
+                result.put(relPath.toString(), file);
+            }
+        }
+        return result;
     }
 }
