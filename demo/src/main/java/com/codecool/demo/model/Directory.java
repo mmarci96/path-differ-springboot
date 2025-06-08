@@ -34,11 +34,11 @@ public class Directory extends LocalFile {
     public Map<String, LocalFile> getAllNestedFilesWithRelativePaths(String prefix) {
         Map<String, LocalFile> result = new HashMap<>();
         for (LocalFile file : localFiles) {
-            Path relPath = Paths.get(prefix).resolve(file.getName());
+            Path realPath = Paths.get(prefix).resolve(file.getName());
             if (file instanceof Directory dir) {
-                result.putAll(dir.getAllNestedFilesWithRelativePaths(relPath.toString()));
+                result.putAll(dir.getAllNestedFilesWithRelativePaths(realPath.toString()));
             } else {
-                result.put(relPath.toString(), file);
+                result.put(realPath.toString(), file);
             }
         }
         return result;
