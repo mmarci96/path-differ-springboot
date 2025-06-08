@@ -1,5 +1,5 @@
-# path-differ-springboot
-A REST API to compare paths and save results to database as well as serving the history of each request.
+# Path Differ Spring-Boot
+A REST API to compare paths save results to database and serving the history of past requests.
 
 
 ## Overview
@@ -7,8 +7,7 @@ This project provides a REST API for comparing file paths and tracking compariso
 Spring Boot built with Gradle and connecting to PostgreSQL database.  
 
 ## Requirements
-You must have Podman or Docker installed to run this application. 
-
+You must have Podman ![image]({https://img.shields.io/badge/podman-892CA0?style=for-the-badge&logo=podman&logoColor=white}) or Docker ![image]({https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white}) installed to run this application. 
 
 ## Starting the app
 1. Run the following command to setup the runtime environment with default variables:
@@ -22,7 +21,7 @@ export $(grep -v '^#' .env | xargs)
 2. Start the application with the following command:
 
 ```bash
-make Start
+make start
 ```
 
 3. After downloading the images and starting the contrainers run to verify
@@ -35,7 +34,6 @@ CONTAINER ID  IMAGE                          COMMAND   CREATED        STATUS    
 74xxxxxxxxxx  localhost/demo-app:latest                1 minutes ago  Up 1 minutes  0.0.0.0:8080->8080/tcp  app1
 8bxxxxxxxxxx  localhost/demo-app:latest                1 minutes ago  Up 1 minutes  0.0.0.0:8081->8080/tcp  app2
 fexxxxxxxxxx  docker.io/library/postgres:15  postgres  1 minutes ago  Up 1 minutes  0.0.0.0:5432->5432/tcp  pg_local
-~/Documents/path-differ-springboot
 ```
 4. For logging run:
 
