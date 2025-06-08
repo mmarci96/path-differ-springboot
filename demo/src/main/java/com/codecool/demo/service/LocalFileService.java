@@ -38,9 +38,9 @@ public class LocalFileService {
     }
 
     /**
-     * Retrieves the complete history of file comparison requests.
-     * Each history entry contains: - Username of the requester - Full comparison results ({@link
-     * DiffResponseDTO}) - Timestamp of the request
+     * Retrieves the complete history of file comparison requests. Each history entry contains: -
+     * Username of the requester - Full comparison results ({@link DiffResponseDTO}) - Timestamp of
+     * the request
      *
      * @return List of {@link HistoryEntryDTO} objects in chronological order (newest first based on
      *     repository ordering)
@@ -63,9 +63,8 @@ public class LocalFileService {
     }
 
     /**
-     * Processes a new file/directory comparison request:
-     * Reads file structures from both paths Persists the request with username and file metadata
-     * Compares the file structures
+     * Processes a new file/directory comparison request: Reads file structures from both paths
+     * Persists the request with username and file metadata Compares the file structures
      *
      * @param username Identifier of the user initiating the request
      * @param pathA Absolute path to first directory/file
@@ -74,6 +73,7 @@ public class LocalFileService {
      *     location - Files common to both locations (with matching sizes)
      * @throws FileSystemAccessException If paths are invalid/unreadable (handled by fileReader)
      */
+    // @Transactional(rollbackFor = Exception.class)
     public DiffResponseDTO getDiffHandler(String username, String pathA, String pathB) {
         LocalFile localFileA = fileReader.readFileTree(pathA);
         LocalFile localFileB = fileReader.readFileTree(pathB);
@@ -173,7 +173,7 @@ public class LocalFileService {
      * @param localFileB Second file to compare
      * @param onlyInA Output: Will contain first file if not shared
      * @param onlyInB Output: Will contain second file if not shared
-     * @return Set of shared files (single element if files match, empty otherwise)
+     * @return Set of {@link EntryDTO} shared files (single element if files match, empty otherwise)
      */
     private Set<EntryDTO> handleFallback(
             LocalFile localFileA,
