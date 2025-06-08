@@ -55,7 +55,7 @@ public class LocalFileService {
         return compareFiles(localFileA, localFileB);
     }
 
-    public DiffResponseDTO compareFiles(LocalFile localFileA, LocalFile localFileB) {
+    private DiffResponseDTO compareFiles(LocalFile localFileA, LocalFile localFileB) {
         String pathA = localFileA.getPath();
         String pathB = localFileB.getPath();
 

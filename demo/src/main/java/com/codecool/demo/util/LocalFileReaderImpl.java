@@ -45,7 +45,6 @@ public class LocalFileReaderImpl implements LocalFileReader {
                 for (File child : children) {
                     LocalFile localChild = process(child);
                     localChild.setDirectory(directory);
-                    localFileRepository.save(localChild);
                     directory.addLocalFile(localChild);
                     totalSize += localChild.getSize();
                 }
