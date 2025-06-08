@@ -1,7 +1,16 @@
 # path-differ-springboot
 A REST API to compare paths and save results to database as well as serving the history of each request.
 
-## Usage
+
+## Overview
+This project provides a REST API for comparing file paths and tracking comparison history. It uses:
+Spring Boot built with Gradle and connecting to PostgreSQL database.  
+
+## Requirements
+You must have Podman or Docker installed to run this application. 
+
+
+## Starting the app
 1. Run the following command to setup the runtime environment with default variables:
 
 ```bash
@@ -33,4 +42,61 @@ fexxxxxxxxxx  docker.io/library/postgres:15  postgres  1 minutes ago  Up 1 minut
 ```bash
 make logs
 ```
+
+## Features
+Get-Diff:
+GET /api/files/get-diff/{username}?pathA=...&pathB=...
+Example response:
+```json
+{
+  "filePathA": "/home/app-data/dirA",
+  "filePathB": "/home/app-data/dirB",
+  "onlyPathA": [
+    {
+      "name": "child/hello.txt",
+      "size": 12
+    },
+    {
+      "name": "file2.txt",
+      "size": 0
+    }
+  ],
+  "onlyPathB": [],
+  "shared": [
+    {
+      "name": "data.json",
+      "size": 0
+    }
+  ]
+}
+```
+History:
+GET /api/files/history
+Example response:
+```json
+[
+  {
+    "username": "user123",
+    "results": {
+      "filePathA": "/app",
+      "filePathB": "/app",
+      "onlyPathA": [],
+      "onlyPathB": [],
+      "shared": [
+        {
+          "name": "app.jar",
+          "size": 54182419
+        }
+      ]
+    },
+    "createdAt": "2025-06-08T19:04:18.604435"
+  },
+  {
+    ...
+  },
+]
+```
+GET /doc
+For javadocks open the browser at ```http://localhost:8080/doc```.
+
 
