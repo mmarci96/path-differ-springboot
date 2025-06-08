@@ -36,7 +36,7 @@ public class LocalFileService {
         this.diffRequestRepository = diffRequestRepository;
     }
 
-    public  List<HistoryEntryDTO> getHistory() {
+    public List<HistoryEntryDTO> getHistory() {
         return diffRequestRepository.findAll().stream().map(DiffRequest::toHistoryDTO).toList();
     }
 
