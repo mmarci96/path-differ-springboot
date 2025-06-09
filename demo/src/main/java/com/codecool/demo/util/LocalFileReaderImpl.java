@@ -86,6 +86,7 @@ public class LocalFileReaderImpl implements LocalFileReader {
 
             directory.setBytes(totalSize);
             directoryRepository.save(directory);
+            return directory;
         } else {
             LocalFile localFile = new LocalFile();
             localFile.setName(file.getName());

@@ -3,6 +3,7 @@ package com.codecool.demo.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.codecool.demo.exception.LocalFileNotFoundException;
 import com.codecool.demo.model.Directory;
 import com.codecool.demo.model.LocalFile;
 import com.codecool.demo.repository.DiffRequestRepository;
@@ -73,5 +74,42 @@ public class LocalFileServiceTest {
         assertTrue(result.shared().stream().anyMatch(e -> e.name().equals("file1.txt")));
         assertTrue(result.onlyPathA().stream().anyMatch(e -> e.name().equals("file2.txt")));
         assertTrue(result.onlyPathB().stream().anyMatch(e -> e.name().equals("file3.txt")));
+    }
+
+    @Test
+    void getDiffHandler_shouldThrow_whenSourceFileDoesNotExist() {
+        String invalidPathA = "/nonexistent/fileA";
+        String validPathB = "/path/dirB";
+
+        when(fileReader.readFileTree(invalidPathA))
+                .thenThrow(new LocalFileNotFoundException("No file at: " + invalidPathA));
+
+        var ex =
+                assertThrows(
+                        LocalFileNotFoundException.class,
+                        () -> localFileService.getDiffHandler("user1", invalidPathA, validPathB),
+                        "Expected exception for nonexistent fileA");
+
+        assertTrue(ex.getMessage().contains(invalidPathA));
+    }
+
+    @Test
+    void getDiffHandler_shouldThrow_whenTargetFolderDoesNotExist() {
+        String validPathA = "/path/dirA";
+        String invalidPathB = "/nonexistent/dirB";
+
+        var dirA = mock(Directory.class);
+        when(fileReader.readFileTree(validPathA)).thenReturn(dirA);
+
+        when(fileReader.readFileTree(invalidPathB))
+                .thenThrow(new LocalFileNotFoundException("No file at: " + invalidPathB));
+
+        var ex =
+                assertThrows(
+                        LocalFileNotFoundException.class,
+                        () -> localFileService.getDiffHandler("user1", validPathA, invalidPathB),
+                        "Expected exception for nonexistent dirB");
+
+        assertTrue(ex.getMessage().contains(invalidPathB));
     }
 }

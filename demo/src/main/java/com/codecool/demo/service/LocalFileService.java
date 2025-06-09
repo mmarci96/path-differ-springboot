@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Service for comparing directory/file structures and managing comparison history. Handles reading
@@ -139,10 +140,15 @@ public class LocalFileService {
             Set<EntryDTO> onlyInLonger,
             Set<EntryDTO> onlyInShorter) {
 
+        Set<EntryDTO> unmatchedInShorter =
+                fileMapShorter.entrySet().stream()
+                        .map(e -> new EntryDTO(e.getKey(), e.getValue().getBytes()))
+                        .collect(Collectors.toSet());
+
         for (Map.Entry<String, LocalFile> entry : fileMapLonger.entrySet()) {
             String path = entry.getKey();
             LocalFile fileA = entry.getValue();
-            LocalFile fileB = fileMapShorter.remove(path);
+            LocalFile fileB = fileMapShorter.get(path);
 
             if (fileB == null) {
                 onlyInLonger.add(new EntryDTO(path, fileA.getBytes()));
@@ -152,20 +158,18 @@ public class LocalFileService {
             long sizeA = fileA.getBytes();
             long sizeB = fileB.getBytes();
 
+            var entryA = new EntryDTO(path, sizeA);
+            unmatchedInShorter.remove(entryA);
+
             if (sizeA == sizeB) {
-                shared.add(new EntryDTO(path, sizeA));
-            } else {
-                onlyInLonger.add(new EntryDTO(path, sizeA));
-                onlyInShorter.add(new EntryDTO(path, sizeB));
+                shared.add(entryA);
+                continue;
             }
+
+            onlyInLonger.add(entryA);
         }
 
-        for (Map.Entry<String, LocalFile> entry : fileMapShorter.entrySet()) {
-            String path = entry.getKey();
-            if (!fileMapLonger.containsKey(path)) {
-                onlyInShorter.add(new EntryDTO(path, entry.getValue().getBytes()));
-            }
-        }
+        onlyInShorter.addAll(unmatchedInShorter);
     }
 
     /**
