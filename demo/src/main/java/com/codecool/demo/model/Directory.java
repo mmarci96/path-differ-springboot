@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -48,8 +47,7 @@ public class Directory extends LocalFile {
     public Map<String, LocalFile> getAllNestedFilesWithRelativePaths(String prefix) {
         Map<String, LocalFile> result = new HashMap<>();
         for (LocalFile file : localFiles) {
-            String relativePath =
-                    prefix.isEmpty() ? file.getName() : prefix + File.separator + file.getName();
+            String relativePath = prefix.isEmpty() ? file.getName() : prefix + "/" + file.getName();
 
             if (file instanceof Directory dir) {
                 result.putAll(dir.getAllNestedFilesWithRelativePaths(relativePath));
