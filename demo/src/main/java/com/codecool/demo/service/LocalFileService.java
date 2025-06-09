@@ -11,6 +11,7 @@ import com.codecool.demo.util.LocalFileReader;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -73,7 +74,7 @@ public class LocalFileService {
      *     location - Files common to both locations (with matching sizes)
      * @throws FileSystemAccessException If paths are invalid/unreadable (handled by fileReader)
      */
-    // @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     public DiffResponseDTO getDiffHandler(String username, String pathA, String pathB) {
         LocalFile localFileA = fileReader.readFileTree(pathA);
         LocalFile localFileB = fileReader.readFileTree(pathB);
@@ -125,40 +126,44 @@ public class LocalFileService {
      * <p>Present in both + same size → shared Present in both + different sizes → added to
      * <b>onlyInA</b> and <b>onlyInB</b> Present in only one map → added to corresponding unique set
      *
-     * @param filesA Map of relative paths → files from first directory
-     * @param filesB Map of relative paths → files from second directory
+     * @param fileMapLonger Map of relative paths → files from first directory
+     * @param fileMapShorter Map of relative paths → files from second directory
      * @param shared Output: Files with matching paths and sizes
-     * @param onlyInA Output: Files only present in first directory
-     * @param onlyInB Output: Files only present in second directory
+     * @param onlyInLonger Output: Files only present in first directory
+     * @param onlyInShorter Output: Files only present in second directory
      */
     private void classifyDifferences(
-            Map<String, LocalFile> filesA,
-            Map<String, LocalFile> filesB,
+            Map<String, LocalFile> fileMapLonger,
+            Map<String, LocalFile> fileMapShorter,
             Set<EntryDTO> shared,
-            Set<EntryDTO> onlyInA,
-            Set<EntryDTO> onlyInB) {
+            Set<EntryDTO> onlyInLonger,
+            Set<EntryDTO> onlyInShorter) {
 
-        for (Map.Entry<String, LocalFile> entry : filesA.entrySet()) {
+        for (Map.Entry<String, LocalFile> entry : fileMapLonger.entrySet()) {
             String path = entry.getKey();
             LocalFile fileA = entry.getValue();
-            LocalFile fileB = filesB.get(path);
+            LocalFile fileB = fileMapShorter.remove(path);
 
-            if (fileB != null) {
-                if (fileA.getSize() == fileB.getSize()) {
-                    shared.add(new EntryDTO(path, fileA.getSize()));
-                } else {
-                    onlyInA.add(new EntryDTO(path, fileA.getSize()));
-                    onlyInB.add(new EntryDTO(path, fileB.getSize()));
-                }
+            if (fileB == null) {
+                onlyInLonger.add(new EntryDTO(path, fileA.getSize()));
+                continue;
+            }
+
+            long sizeA = fileA.getSize();
+            long sizeB = fileB.getSize();
+
+            if (sizeA == sizeB) {
+                shared.add(new EntryDTO(path, sizeA));
             } else {
-                onlyInA.add(new EntryDTO(path, fileA.getSize()));
+                onlyInLonger.add(new EntryDTO(path, sizeA));
+                onlyInShorter.add(new EntryDTO(path, sizeB));
             }
         }
 
-        for (Map.Entry<String, LocalFile> entry : filesB.entrySet()) {
+        for (Map.Entry<String, LocalFile> entry : fileMapShorter.entrySet()) {
             String path = entry.getKey();
-            if (!filesA.containsKey(path)) {
-                onlyInB.add(new EntryDTO(path, entry.getValue().getSize()));
+            if (!fileMapLonger.containsKey(path)) {
+                onlyInShorter.add(new EntryDTO(path, entry.getValue().getSize()));
             }
         }
     }
