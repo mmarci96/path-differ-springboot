@@ -27,7 +27,7 @@ class DiffRequestTest {
     }
 
     @Test
-    void testNothing(){
+    void testNothing() {
         LocalFile a = new LocalFile();
         a.setName("A.java");
 

@@ -8,7 +8,6 @@ import com.codecool.demo.model.LocalFile;
 import com.codecool.demo.repository.DiffRequestRepository;
 import com.codecool.demo.util.LocalFileReader;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,22 +25,8 @@ public class LocalFileServiceTest {
 
     @InjectMocks private LocalFileService localFileService;
 
-    // private Directory mockDirectory(String name, long size, Map<String, LocalFile> nestedFiles) {
-    //     Directory dir = mock(Directory.class);
-    //     when(dir.getName()).thenReturn(name);
-    //     when(dir.getSize()).thenReturn(size);
-    //     when(dir.getAllNestedFilesWithRelativePaths("")).thenReturn(nestedFiles);
-    //     return dir;
-    // }
-
-    @BeforeEach
-    void setUp() {
-        // Any shared setup if needed
-    }
-
     @Test
     void compareFiles_shouldClassifyDifferencesCorrectly() {
-        // Arrange
         var file1 = new LocalFile();
         file1.setName("file1.txt");
         file1.setPath("/path/dirA/file1.txt");
