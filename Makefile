@@ -22,18 +22,15 @@ export
         start-app1 stop-app1 restart-app1 logs-app1 \
         start-app2 stop-app2 restart-app2 logs-app2
 
-# Build application image
 build:
 	@echo "Building application image with Podman..."
-	podman build -t $(APP_IMAGE_NAME) ./demo/
+	podman build -t $(APP_IMAGE_NAME) ./app/
 
-# Network setup
 create-network:
 	@echo "Creating network if not exists..."
 	- podman network create $(NETWORK_NAME)
 
-# Database commands
-start-db: create-network
+start-db: create-network ensure-db-dir
 	@echo "Starting PostgreSQL container..."
 	- podman rm -f $(PG_CONTAINER_NAME) || true
 	podman run -d --name $(PG_CONTAINER_NAME) \
@@ -44,6 +41,9 @@ start-db: create-network
 		-v $(PG_DATA_DIR):/var/lib/postgresql/data:Z \
 		$(PG_IMAGE)
 
+ensure-db-dir:
+	@mkdir -p $(PG_DATA_DIR)
+
 stop-db:
 	@echo "Stopping and removing PostgreSQL..."
 	- podman stop $(PG_CONTAINER_NAME) || true
@@ -51,7 +51,6 @@ stop-db:
 
 restart-db: stop-db start-db
 
-# App 1
 start-app1: create-network build
 	@echo "Starting application container 1 on port $(APP_PORT1)..."
 	- podman rm -f $(APP_CONTAINER1) || true
@@ -73,7 +72,6 @@ restart-app1: stop-app1 start-app1
 logs-app1:
 	@podman logs -f $(APP_CONTAINER1)
 
-# App 2
 start-app2: create-network build
 	@echo "Starting application container 2 on port $(APP_PORT2)..."
 	- podman rm -f $(APP_CONTAINER2) || true
@@ -95,7 +93,6 @@ restart-app2: stop-app2 start-app2
 logs-app2:
 	@podman logs -f $(APP_CONTAINER2)
 
-# Bulk commands
 start: start-db start-app1 start-app2
 stop: stop-app1 stop-app2 stop-db
 restart: stop start
