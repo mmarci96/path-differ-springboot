@@ -36,7 +36,7 @@ public class LocalFile {
     private String path;
 
     /** Size in bytes (for directories: calculated total size) */
-    private long size;
+    private long bytes;
 
     /** Parent directory (null for root entries) */
     @ManyToOne

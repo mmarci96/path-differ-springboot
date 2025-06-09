@@ -48,8 +48,9 @@ public class Directory extends LocalFile {
     public Map<String, LocalFile> getAllNestedFilesWithRelativePaths(String prefix) {
         Map<String, LocalFile> result = new HashMap<>();
         for (LocalFile file : localFiles) {
-            String relativePath =
-                    prefix.isEmpty() ? file.getName() : prefix + File.separator + file.getName();
+            String name = file.getName();
+            String pre = prefix + File.separator;
+            String relativePath = prefix.isEmpty() ? name : pre + name;
 
             if (file instanceof Directory dir) {
                 result.putAll(dir.getAllNestedFilesWithRelativePaths(relativePath));

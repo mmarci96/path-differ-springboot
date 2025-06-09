@@ -45,22 +45,22 @@ public class LocalFileServiceTest {
         var file1 = new LocalFile();
         file1.setName("file1.txt");
         file1.setPath("/path/dirA/file1.txt");
-        file1.setSize(100);
+        file1.setBytes(100);
 
         var file2 = new LocalFile();
         file2.setName("file2.txt");
         file2.setPath("/path/dirA/file2.txt");
-        file2.setSize(110);
+        file2.setBytes(110);
 
         var file3 = new LocalFile();
         file3.setName("file3.txt");
         file3.setPath("/path/dirB/file3.txt");
-        file3.setSize(160);
+        file3.setBytes(160);
 
         var file4 = new LocalFile();
         file4.setName("file4.txt");
         file4.setPath("/path/dirB/file4.txt");
-        file4.setSize(100);
+        file4.setBytes(100);
 
         var dirA = mock(Directory.class);
         when(dirA.getAllNestedFilesWithRelativePaths(""))

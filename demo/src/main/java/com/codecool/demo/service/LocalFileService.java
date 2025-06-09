@@ -145,12 +145,12 @@ public class LocalFileService {
             LocalFile fileB = fileMapShorter.remove(path);
 
             if (fileB == null) {
-                onlyInLonger.add(new EntryDTO(path, fileA.getSize()));
+                onlyInLonger.add(new EntryDTO(path, fileA.getBytes()));
                 continue;
             }
 
-            long sizeA = fileA.getSize();
-            long sizeB = fileB.getSize();
+            long sizeA = fileA.getBytes();
+            long sizeB = fileB.getBytes();
 
             if (sizeA == sizeB) {
                 shared.add(new EntryDTO(path, sizeA));
@@ -163,7 +163,7 @@ public class LocalFileService {
         for (Map.Entry<String, LocalFile> entry : fileMapShorter.entrySet()) {
             String path = entry.getKey();
             if (!fileMapLonger.containsKey(path)) {
-                onlyInShorter.add(new EntryDTO(path, entry.getValue().getSize()));
+                onlyInShorter.add(new EntryDTO(path, entry.getValue().getBytes()));
             }
         }
     }
@@ -187,11 +187,11 @@ public class LocalFileService {
             Set<EntryDTO> onlyInB) {
         Set<EntryDTO> fallbackShared = new HashSet<>();
         if (localFileA.getName().equals(localFileB.getName())
-                && localFileA.getSize() == localFileB.getSize()) {
-            fallbackShared.add(new EntryDTO(localFileA.getName(), localFileA.getSize()));
+                && localFileA.getBytes() == localFileB.getBytes()) {
+            fallbackShared.add(new EntryDTO(localFileA.getName(), localFileA.getBytes()));
         } else {
-            onlyInA.add(new EntryDTO(localFileA.getName(), localFileA.getSize()));
-            onlyInB.add(new EntryDTO(localFileB.getName(), localFileB.getSize()));
+            onlyInA.add(new EntryDTO(localFileA.getName(), localFileA.getBytes()));
+            onlyInB.add(new EntryDTO(localFileB.getName(), localFileB.getBytes()));
         }
         return fallbackShared;
     }
