@@ -50,12 +50,14 @@ public class LocalFileReaderImpl implements LocalFileReader {
      */
     private LocalFile process(File file) {
         if (file.isDirectory()) {
+            File[] children = file.listFiles();
+            long totalSize = 0;
+            long totalChildrenCount = Integer.toUnsignedLong(children.length);
+
             Directory directory = new Directory();
             directory.setName(file.getName());
             directory.setPath(file.getPath());
-
-            long totalSize = 0;
-            File[] children = file.listFiles();
+            directory.setTotalChildCount(totalChildrenCount);
 
             if (children != null) {
                 for (File child : children) {

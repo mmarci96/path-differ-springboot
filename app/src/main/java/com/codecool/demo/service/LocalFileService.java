@@ -118,28 +118,33 @@ public class LocalFileService {
      * @return {@link DiffResponseDTO} with categorized entries. Returned sets:
      */
     private DiffResponseDTO compareFiles(LocalFile localFileA, LocalFile localFileB) {
-        String pathA = localFileA.getPath();
-        String pathB = localFileB.getPath();
 
         Set<FileEntryDTO> sharedFiles = new HashSet<>();
         Set<FileEntryDTO> onlyInA = new HashSet<>();
         Set<FileEntryDTO> onlyInB = new HashSet<>();
 
         if (localFileA instanceof Directory dirA && localFileB instanceof Directory dirB) {
-            Map<String, LocalFile> filesA = dirA.getAllNestedFilesWithRelativePaths("");
-            Map<String, LocalFile> filesB = dirB.getAllNestedFilesWithRelativePaths("");
+            // Map<String, LocalFile> filesB = dirB.getAllNestedFilesWithRelativePaths("");
+            long sizeA = dirA.getTotalChildCount();
+            long sizeB = dirB.getTotalChildCount();
 
-            if (filesA.size() <= filesB.size()) {
+            if (sizeA <= sizeB) {
+                Map<String, LocalFile> filesA = dirA.getMapOfNestedFilesWithRelativePaths("");
+                Set<LocalFile> filesB = dirB.getSetOfNestedFilesWithRelativePaths("");
                 classifyDifferences(filesA, filesB, sharedFiles, onlyInA, onlyInB);
             } else {
+                Map<String, LocalFile> filesB = dirB.getMapOfNestedFilesWithRelativePaths("");
+                Set<LocalFile> filesA = dirA.getSetOfNestedFilesWithRelativePaths("");
                 classifyDifferences(filesB, filesA, sharedFiles, onlyInB, onlyInA);
             }
-            return new DiffResponseDTO(pathA, pathB, onlyInA, onlyInB, sharedFiles);
+            return new DiffResponseDTO(
+                    localFileA.getPath(), localFileB.getPath(), onlyInA, onlyInB, sharedFiles);
         }
 
         Set<FileEntryDTO> fallbackShared = handleFallback(localFileA, localFileB, onlyInA, onlyInB);
 
-        return new DiffResponseDTO(pathA, pathB, onlyInA, onlyInB, fallbackShared);
+        return new DiffResponseDTO(
+                localFileA.getPath(), localFileB.getPath(), onlyInA, onlyInB, fallbackShared);
     }
 
     /**
@@ -150,27 +155,27 @@ public class LocalFileService {
      * <b>onlyInA</b> and <b>onlyInB</b> Present in only one map → added to corresponding unique set
      *
      * @param fileMapLonger Map of relative paths → files from first directory
-     * @param fileMapShorter Map of relative paths → files from second directory
+     * @param fileSetShorter Map of relative paths → files from second directory
      * @param shared Output: Files with matching paths and sizes
      * @param onlyInLonger Output: Files only present in first directory
      * @param onlyInShorter Output: Files only present in second directory
      */
     private void classifyDifferences(
             Map<String, LocalFile> fileMapLonger,
-            Map<String, LocalFile> fileMapShorter,
+            Set<LocalFile> fileSetShorter,
             Set<FileEntryDTO> shared,
             Set<FileEntryDTO> onlyInLonger,
             Set<FileEntryDTO> onlyInShorter) {
 
         Set<FileEntryDTO> unmatchedInShorter =
-                fileMapShorter.entrySet().stream()
-                        .map(e -> new FileEntryDTO(e.getKey(), e.getValue().getBytes()))
+                fileSetShorter.stream()
+                        .map(file -> new FileEntryDTO(file.getName(), file.getBytes()))
                         .collect(Collectors.toSet());
 
-        for (Map.Entry<String, LocalFile> entry : fileMapLonger.entrySet()) {
-            String path = entry.getKey();
-            LocalFile fileA = entry.getValue();
-            LocalFile fileB = fileMapShorter.get(path);
+        for (LocalFile entry : fileSetShorter) {
+            String path = entry.getPath();
+            LocalFile fileA = entry;
+            LocalFile fileB = fileMapLonger.get(path);
 
             if (fileB == null) {
                 onlyInLonger.add(new FileEntryDTO(path, fileA.getBytes()));

@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Map;
+import java.util.Set;
 
 @ExtendWith(MockitoExtension.class)
 public class LocalFileServiceTest {
@@ -53,18 +54,18 @@ public class LocalFileServiceTest {
         file4.setBytes(100);
 
         var dirA = mock(Directory.class);
-        when(dirA.getAllNestedFilesWithRelativePaths(""))
+        when(dirA.getMapOfNestedFilesWithRelativePaths(""))
                 .thenReturn(
                         Map.of(
                                 "file1.txt", file1,
                                 "file2.txt", file2));
 
         var dirB = mock(Directory.class);
-        when(dirB.getAllNestedFilesWithRelativePaths(""))
-                .thenReturn(
-                        Map.of(
-                                "file1.txt", file1,
-                                "file3.txt", file3));
+        when(dirB.getSetOfNestedFilesWithRelativePaths(""))
+                .thenReturn( Set.of
+                         (
+                                file1,
+                                file3));
 
         when(fileReader.readFileTree("/path/dirA")).thenReturn(dirA);
         when(fileReader.readFileTree("/path/dirB")).thenReturn(dirB);

@@ -25,7 +25,7 @@ public class DirectoryTest {
     void test_getAllNestedFilesWithRelativePaths_whenEmpty() {
         Directory root = new Directory();
         root.setName("root");
-        Map<String, LocalFile> nested = root.getAllNestedFilesWithRelativePaths("");
+        Map<String, LocalFile> nested = root.getMapOfNestedFilesWithRelativePaths("");
         assertEquals(0, nested.size());
     }
 
@@ -53,7 +53,7 @@ public class DirectoryTest {
         root.addLocalFile(file1);
         root.addLocalFile(subDir);
 
-        Map<String, LocalFile> nested = root.getAllNestedFilesWithRelativePaths("");
+        Map<String, LocalFile> nested = root.getMapOfNestedFilesWithRelativePaths("");
         assertEquals(2, nested.size());
         assertTrue(nested.containsKey("file1.txt"));
         assertTrue(nested.containsKey("sub/file2.txt"));
@@ -87,7 +87,7 @@ public class DirectoryTest {
         children.addLocalFile(nestedChild);
         root.addLocalFile(children);
 
-        var files = root.getAllNestedFilesWithRelativePaths("");
+        var files = root.getMapOfNestedFilesWithRelativePaths("");
         assertEquals(1, files.size());
         assertTrue(files.containsKey("child/nested-child/file.txt"));
     }

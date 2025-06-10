@@ -28,33 +28,59 @@ public class Directory extends LocalFile {
     @OneToMany(mappedBy = "directory", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<LocalFile> localFiles = new HashSet<>();
 
+    private Long totalChildCount;
+
     /**
-     * Adds a file/subdirectory to this directory. Establishes bidirectional relationship.
+     * Adds a file/subdirectory to this directory. Establishes bidirectional relationship. If its a
+     * directory increment the totalChildCount to keep up with total nested files.
      *
      * @param localFile File or directory to add
      */
     public void addLocalFile(LocalFile localFile) {
+        if (localFile instanceof Directory dir) {
+            totalChildCount += dir.getTotalChildCount();
+        }
         localFile.setDirectory(this);
         localFiles.add(localFile);
     }
 
     /**
-     * Recursively collects all nested files with relative paths.
+     * Recursively collects all nested files with relative paths to a HashMap.
      *
      * @param prefix Current relative path prefix
      * @return Map of relative paths to file entities
      */
-    public Map<String, LocalFile> getAllNestedFilesWithRelativePaths(String prefix) {
+    public Map<String, LocalFile> getMapOfNestedFilesWithRelativePaths(String prefix) {
         Map<String, LocalFile> result = new HashMap<>();
         for (LocalFile file : localFiles) {
             String relativePath = prefix.isEmpty() ? file.getName() : prefix + "/" + file.getName();
 
             if (file instanceof Directory dir) {
-                result.putAll(dir.getAllNestedFilesWithRelativePaths(relativePath));
+                result.putAll(dir.getMapOfNestedFilesWithRelativePaths(relativePath));
             } else {
                 result.put(relativePath, file);
             }
         }
+        return result;
+    }
+    /**
+     * Recursively collects all nested files with relative paths to a HashSet.
+     *
+     * @param prefix Current relative path prefix
+     * @return Set of relative paths to file entities
+     */
+    public Set<LocalFile> getSetOfNestedFilesWithRelativePaths(String prefix) {
+        Set<LocalFile> result = new HashSet<>();
+        for (LocalFile file : localFiles) {
+            String relativePath = prefix.isEmpty() ? file.getName() : prefix + "/" + file.getName();
+
+            if (file instanceof Directory dir) {
+                result.addAll(dir.getSetOfNestedFilesWithRelativePaths(relativePath));
+            } else {
+                result.add(file);
+            }
+        }
+
         return result;
     }
 }
