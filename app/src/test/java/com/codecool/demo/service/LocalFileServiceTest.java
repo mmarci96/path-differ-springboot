@@ -7,6 +7,8 @@ import com.codecool.demo.exception.LocalFileNotFoundException;
 import com.codecool.demo.model.Directory;
 import com.codecool.demo.model.LocalFile;
 import com.codecool.demo.repository.DiffRequestRepository;
+import com.codecool.demo.repository.DirectoryRepository;
+import com.codecool.demo.repository.LocalFileRepository;
 import com.codecool.demo.util.LocalFileReader;
 
 import org.junit.jupiter.api.Test;
@@ -21,6 +23,8 @@ import java.util.Map;
 public class LocalFileServiceTest {
 
     @Mock private LocalFileReader fileReader;
+    @Mock private LocalFileRepository localFileRepository;
+    @Mock private DirectoryRepository directoryRepository;
 
     @Mock private DiffRequestRepository diffRequestRepository;
 
