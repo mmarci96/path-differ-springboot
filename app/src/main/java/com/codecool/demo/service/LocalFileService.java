@@ -35,14 +35,17 @@ public class LocalFileService {
     private final DiffRequestRepository diffRequestRepository;
     private final DirectoryRepository directoryRepository;
     private final LocalFileRepository localFileRepository;
-    
+
     /**
      * Constructs a new {@code LocalFileService} instance with required dependencies.
      *
-     * @param fileReader Utility for reading and parsing the file system structure into {@link LocalFile} objects
-     * @param diffRequestRepository Repository for persisting and retrieving file comparison requests
+     * @param fileReader Utility for reading and parsing the file system structure into {@link
+     *     LocalFile} objects
+     * @param diffRequestRepository Repository for persisting and retrieving file comparison
+     *     requests
      * @param directoryRepository Repository for persisting {@link Directory} structures
-     * @param localFileRepository Repository for persisting {@link LocalFile} (non-directory) objects
+     * @param localFileRepository Repository for persisting {@link LocalFile} (non-directory)
+     *     objects
      */
     @Autowired
     public LocalFileService(
