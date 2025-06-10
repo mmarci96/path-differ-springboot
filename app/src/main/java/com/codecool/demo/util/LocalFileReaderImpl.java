@@ -41,7 +41,7 @@ public class LocalFileReaderImpl implements LocalFileReader {
      * Recursively processes a file system entry and its children.
      *
      * <p>Directory processing: 1. Creates directory entity 2. Processes all children recursively 3.
-     * Calculates total size as sum of child sizes 4. Persists directory with complete hierarchy
+     * Calculates total size as sum of child sizes
      *
      * <p>File processing: - Creates file entity with direct size
      *
