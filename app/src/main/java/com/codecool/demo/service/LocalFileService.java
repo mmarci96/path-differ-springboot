@@ -36,6 +36,17 @@ public class LocalFileService {
     private final DirectoryRepository directoryRepository;
     private final LocalFileRepository localFileRepository;
 
+    /**
+     * Constructs a new {@code LocalFileService} instance with required dependencies.
+     *
+     * @param fileReader Utility for reading and parsing the file system structure into {@link
+     *     LocalFile} objects
+     * @param diffRequestRepository Repository for persisting and retrieving file comparison
+     *     requests
+     * @param directoryRepository Repository for persisting {@link Directory} structures
+     * @param localFileRepository Repository for persisting {@link LocalFile} (non-directory)
+     *     objects
+     */
     @Autowired
     public LocalFileService(
             LocalFileReader fileReader,
@@ -212,6 +223,14 @@ public class LocalFileService {
         return fallbackShared;
     }
 
+    /**
+     * Persists a {@link LocalFile} or {@link Directory} instance into the appropriate repository.
+     *
+     * <p>If the file is a directory, it is saved using {@link DirectoryRepository}; otherwise, it
+     * is saved using {@link LocalFileRepository}.
+     *
+     * @param file {@link LocalFile} or {@link Directory} to persist
+     */
     private void saveFiles(LocalFile file) {
         if (file instanceof Directory directory) {
             directoryRepository.save(directory);
