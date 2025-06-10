@@ -6,4 +6,4 @@ package com.codecool.demo.dto;
  * @param name Relative path/filename
  * @param size File size in bytes
  */
-public record EntryDTO(String name, Long size) {}
+public record FileEntryDTO(String name, Long size) {}

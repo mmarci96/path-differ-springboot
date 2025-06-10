@@ -1,12 +1,14 @@
 package com.codecool.demo.service;
 
 import com.codecool.demo.dto.DiffResponseDTO;
-import com.codecool.demo.dto.EntryDTO;
+import com.codecool.demo.dto.FileEntryDTO;
 import com.codecool.demo.dto.HistoryEntryDTO;
 import com.codecool.demo.model.DiffRequest;
 import com.codecool.demo.model.Directory;
 import com.codecool.demo.model.LocalFile;
 import com.codecool.demo.repository.DiffRequestRepository;
+import com.codecool.demo.repository.DirectoryRepository;
+import com.codecool.demo.repository.LocalFileRepository;
 import com.codecool.demo.util.LocalFileReader;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,12 +33,19 @@ import java.util.stream.Collectors;
 public class LocalFileService {
     private final LocalFileReader fileReader;
     private final DiffRequestRepository diffRequestRepository;
+    private final DirectoryRepository directoryRepository;
+    private final LocalFileRepository localFileRepository;
 
     @Autowired
     public LocalFileService(
-            LocalFileReader fileReader, DiffRequestRepository diffRequestRepository) {
+            LocalFileReader fileReader,
+            DiffRequestRepository diffRequestRepository,
+            DirectoryRepository directoryRepository,
+            LocalFileRepository localFileRepository) {
         this.diffRequestRepository = diffRequestRepository;
         this.fileReader = fileReader;
+        this.directoryRepository = directoryRepository;
+        this.localFileRepository = localFileRepository;
     }
 
     /**
@@ -79,6 +88,8 @@ public class LocalFileService {
     public DiffResponseDTO getDiffHandler(String username, String pathA, String pathB) {
         LocalFile localFileA = fileReader.readFileTree(pathA);
         LocalFile localFileB = fileReader.readFileTree(pathB);
+        saveFiles(localFileA);
+        saveFiles(localFileB);
         DiffRequest request = new DiffRequest(username, localFileA, localFileB);
         diffRequestRepository.save(request);
         return compareFiles(localFileA, localFileB);
@@ -99,9 +110,9 @@ public class LocalFileService {
         String pathA = localFileA.getPath();
         String pathB = localFileB.getPath();
 
-        Set<EntryDTO> sharedFiles = new HashSet<>();
-        Set<EntryDTO> onlyInA = new HashSet<>();
-        Set<EntryDTO> onlyInB = new HashSet<>();
+        Set<FileEntryDTO> sharedFiles = new HashSet<>();
+        Set<FileEntryDTO> onlyInA = new HashSet<>();
+        Set<FileEntryDTO> onlyInB = new HashSet<>();
 
         if (localFileA instanceof Directory dirA && localFileB instanceof Directory dirB) {
             Map<String, LocalFile> filesA = dirA.getAllNestedFilesWithRelativePaths("");
@@ -115,7 +126,7 @@ public class LocalFileService {
             return new DiffResponseDTO(pathA, pathB, onlyInA, onlyInB, sharedFiles);
         }
 
-        Set<EntryDTO> fallbackShared = handleFallback(localFileA, localFileB, onlyInA, onlyInB);
+        Set<FileEntryDTO> fallbackShared = handleFallback(localFileA, localFileB, onlyInA, onlyInB);
 
         return new DiffResponseDTO(pathA, pathB, onlyInA, onlyInB, fallbackShared);
     }
@@ -136,13 +147,13 @@ public class LocalFileService {
     private void classifyDifferences(
             Map<String, LocalFile> fileMapLonger,
             Map<String, LocalFile> fileMapShorter,
-            Set<EntryDTO> shared,
-            Set<EntryDTO> onlyInLonger,
-            Set<EntryDTO> onlyInShorter) {
+            Set<FileEntryDTO> shared,
+            Set<FileEntryDTO> onlyInLonger,
+            Set<FileEntryDTO> onlyInShorter) {
 
-        Set<EntryDTO> unmatchedInShorter =
+        Set<FileEntryDTO> unmatchedInShorter =
                 fileMapShorter.entrySet().stream()
-                        .map(e -> new EntryDTO(e.getKey(), e.getValue().getBytes()))
+                        .map(e -> new FileEntryDTO(e.getKey(), e.getValue().getBytes()))
                         .collect(Collectors.toSet());
 
         for (Map.Entry<String, LocalFile> entry : fileMapLonger.entrySet()) {
@@ -151,14 +162,14 @@ public class LocalFileService {
             LocalFile fileB = fileMapShorter.get(path);
 
             if (fileB == null) {
-                onlyInLonger.add(new EntryDTO(path, fileA.getBytes()));
+                onlyInLonger.add(new FileEntryDTO(path, fileA.getBytes()));
                 continue;
             }
 
             long sizeA = fileA.getBytes();
             long sizeB = fileB.getBytes();
 
-            var entryA = new EntryDTO(path, sizeA);
+            var entryA = new FileEntryDTO(path, sizeA);
             unmatchedInShorter.remove(entryA);
 
             if (sizeA == sizeB) {
@@ -182,21 +193,30 @@ public class LocalFileService {
      * @param localFileB Second file to compare
      * @param onlyInA Output: Will contain first file if not shared
      * @param onlyInB Output: Will contain second file if not shared
-     * @return Set of {@link EntryDTO} shared files (single element if files match, empty otherwise)
+     * @return Set of {@link FileEntryDTO} shared files (single element if files match, empty
+     *     otherwise)
      */
-    private Set<EntryDTO> handleFallback(
+    private Set<FileEntryDTO> handleFallback(
             LocalFile localFileA,
             LocalFile localFileB,
-            Set<EntryDTO> onlyInA,
-            Set<EntryDTO> onlyInB) {
-        Set<EntryDTO> fallbackShared = new HashSet<>();
+            Set<FileEntryDTO> onlyInA,
+            Set<FileEntryDTO> onlyInB) {
+        Set<FileEntryDTO> fallbackShared = new HashSet<>();
         if (localFileA.getName().equals(localFileB.getName())
                 && localFileA.getBytes() == localFileB.getBytes()) {
-            fallbackShared.add(new EntryDTO(localFileA.getName(), localFileA.getBytes()));
+            fallbackShared.add(new FileEntryDTO(localFileA.getName(), localFileA.getBytes()));
         } else {
-            onlyInA.add(new EntryDTO(localFileA.getName(), localFileA.getBytes()));
-            onlyInB.add(new EntryDTO(localFileB.getName(), localFileB.getBytes()));
+            onlyInA.add(new FileEntryDTO(localFileA.getName(), localFileA.getBytes()));
+            onlyInB.add(new FileEntryDTO(localFileB.getName(), localFileB.getBytes()));
         }
         return fallbackShared;
+    }
+
+    private void saveFiles(LocalFile file) {
+        if (file instanceof Directory directory) {
+            directoryRepository.save(directory);
+            return;
+        }
+        localFileRepository.save(file);
     }
 }
