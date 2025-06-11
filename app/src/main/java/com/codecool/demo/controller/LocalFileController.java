@@ -49,6 +49,13 @@ public class LocalFileController {
         return ResponseEntity.ok(diffResult);
     }
 
+    @GetMapping("/get-diff-v2/{username}")
+    public ResponseEntity<DiffResponseDTO> getDiffV2(
+            @PathVariable String username, @RequestParam String pathA, @RequestParam String pathB) {
+        var diffResult = localFileService.getDiffByNameAndSizeHandler(username, pathA, pathB);
+        return ResponseEntity.ok(diffResult);
+    }
+
     /**
      * Retrieves the history of previous path comparisons, including the username that requested
      * them and the time of each request.

@@ -1,5 +1,7 @@
 package com.codecool.demo.model;
 
+import com.codecool.demo.dto.FileEntryDTO;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -53,6 +55,33 @@ public class Directory extends LocalFile {
                 result.putAll(dir.getAllNestedFilesWithRelativePaths(relativePath));
             } else {
                 result.put(relativePath, file);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Recursively collects all nested LocalFile instances contained within this directory.
+     *
+     * @return Set of all nested LocalFile objects as FileEntryDTO (files and subdirectories)
+     */
+    public Set<FileEntryDTO> getSetOfNestedFilesToDTO() {
+        Set<FileEntryDTO> result = new HashSet<>();
+        for (LocalFile file : localFiles) {
+            result.add(file.toFileEntryDTO());
+            if (file instanceof Directory dir) {
+                result.addAll(dir.getSetOfNestedFilesToDTO());
+            }
+        }
+        return result;
+    }
+
+    public Map<String, FileEntryDTO> getMapOfNestedFileNameAndSize() {
+        Map<String, FileEntryDTO> result = new HashMap<>();
+        for (LocalFile file : localFiles) {
+            result.put(file.getName(), file.toFileEntryDTO());
+            if (file instanceof Directory dir) {
+                result.putAll(dir.getMapOfNestedFileNameAndSize());
             }
         }
         return result;

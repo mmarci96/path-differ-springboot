@@ -1,5 +1,7 @@
 package com.codecool.demo.model;
 
+import com.codecool.demo.dto.FileEntryDTO;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -42,4 +44,8 @@ public class LocalFile {
     @ManyToOne
     @JoinColumn(name = "directory_id")
     private Directory directory;
+
+    public FileEntryDTO toFileEntryDTO() {
+        return new FileEntryDTO(name, bytes);
+    }
 }

@@ -1,6 +1,7 @@
 package com.codecool.demo.service;
 
 import com.codecool.demo.dto.DiffResponseDTO;
+import com.codecool.demo.dto.FileComparsionResult;
 import com.codecool.demo.dto.FileEntryDTO;
 import com.codecool.demo.dto.HistoryEntryDTO;
 import com.codecool.demo.exception.LocalFileNotFoundException;
@@ -74,7 +75,7 @@ public class LocalFileService {
         for (DiffRequest request : diffRequests) {
             LocalFile localFileA = request.getLocalFileA();
             LocalFile localFileB = request.getLocalFileB();
-            DiffResponseDTO diff = compareFiles(localFileA, localFileB);
+            DiffResponseDTO diff = compareFilesByRelativePath(localFileA, localFileB);
 
             var name = request.getUsername();
             var at = request.getCreatedAt();
@@ -104,7 +105,76 @@ public class LocalFileService {
         saveFiles(localFileB);
         DiffRequest request = new DiffRequest(username, localFileA, localFileB);
         diffRequestRepository.save(request);
-        return compareFiles(localFileA, localFileB);
+        return compareFilesByRelativePath(localFileA, localFileB);
+    }
+
+    /**
+     * Processes a new file/directory comparison request: Reads file structures from both paths
+     * Persists the request with username and file metadata Compares the file structures
+     *
+     * @param username Identifier of the user initiating the request
+     * @param pathA Absolute path to first directory/file
+     * @param pathB Absolute path to second directory/file
+     * @return {@link DiffResponseDTO} containing: - Base paths compared - Files unique to each
+     *     location - Files common to both locations (with matching sizes)
+     * @throws LocalFileNotFoundException If paths are invalid/unreadable (handled by fileReader)
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public DiffResponseDTO getDiffByNameAndSizeHandler(
+            String username, String pathA, String pathB) {
+        LocalFile localFileA = fileReader.readFileTree(pathA);
+        LocalFile localFileB = fileReader.readFileTree(pathB);
+        saveFiles(localFileA);
+        saveFiles(localFileB);
+
+        DiffRequest request = new DiffRequest(username, localFileA, localFileB);
+        diffRequestRepository.save(request);
+        return compareFilesByNameAndSize(localFileA, localFileB);
+    }
+
+    private DiffResponseDTO compareFilesByNameAndSize(LocalFile localFileA, LocalFile localFileB) {
+        if (localFileA instanceof Directory dirA && localFileB instanceof Directory dirB) {
+            Map<String, FileEntryDTO> fileMapA = dirA.getMapOfNestedFileNameAndSize();
+            Set<FileEntryDTO> filesB = dirB.getSetOfNestedFilesToDTO();
+            var res = compareDiffByNameAndSize(fileMapA, filesB);
+            return new DiffResponseDTO(
+                    localFileA.getPath(),
+                    localFileB.getPath(),
+                    res.onlyInMap(),
+                    res.onlyInSet(),
+                    res.sharedFiles());
+        }
+        Set<FileEntryDTO> onlyInA = new HashSet<>();
+        Set<FileEntryDTO> onlyInB = new HashSet<>();
+
+        Set<FileEntryDTO> fallbackShared = handleFallback(localFileA, localFileB, onlyInA, onlyInB);
+
+        return new DiffResponseDTO(
+                localFileA.getPath(), localFileB.getPath(), onlyInA, onlyInB, fallbackShared);
+    }
+
+    private FileComparsionResult compareDiffByNameAndSize(
+            Map<String, FileEntryDTO> fileMap, Set<FileEntryDTO> fileSet) {
+
+        Set<FileEntryDTO> shared = new HashSet<>();
+        Set<FileEntryDTO> onlyInMap = new HashSet<>(fileMap.values());
+        Set<FileEntryDTO> onlyInSet = new HashSet<>();
+
+        for (FileEntryDTO fileEntry : fileSet) {
+            FileEntryDTO match = fileMap.get(fileEntry.name());
+
+            if (match == null) {
+                onlyInSet.add(fileEntry);
+            } else if (fileEntry.size().equals(match.size())) {
+                shared.add(fileEntry);
+                onlyInMap.remove(match);
+            } else {
+                onlyInSet.add(fileEntry);
+                onlyInMap.remove(match);
+            }
+        }
+
+        return new FileComparsionResult(shared, onlyInMap, onlyInSet);
     }
 
     /**
@@ -118,7 +188,7 @@ public class LocalFileService {
      * @param localFileB Second file/directory to compare
      * @return {@link DiffResponseDTO} with categorized entries. Returned sets:
      */
-    private DiffResponseDTO compareFiles(LocalFile localFileA, LocalFile localFileB) {
+    private DiffResponseDTO compareFilesByRelativePath(LocalFile localFileA, LocalFile localFileB) {
         String pathA = localFileA.getPath();
         String pathB = localFileB.getPath();
 
