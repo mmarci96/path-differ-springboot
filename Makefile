@@ -1,21 +1,23 @@
-# # Variables
-# PG_CONTAINER_NAME = pg_local
-# PG_IMAGE = docker.io/library/postgres:15
-# PG_PORT = 5432
-# PG_USER = postgres
-# PG_PASSWORD = postgres
-# PG_DATA_DIR = ./pgdata
-#
-# APP_IMAGE_NAME = demo-app:latest
-# APP_CONTAINER1 = app1
-# APP_CONTAINER2 = app2
-# APP_PORT1 = 8080
-# APP_PORT2 = 8081
-#
-# NETWORK_NAME = demo-net
+# Variables
+PG_CONTAINER_NAME := pg_local
+PG_IMAGE := docker.io/library/postgres:15
+PG_PORT := 5432
+PG_USER := postgres
+PG_PASSWORD := postgres
+PG_DATA_DIR := ./pgdata
 
-include .env
-export
+APP_IMAGE_NAME := demo-app:latest
+APP_CONTAINER1 := app1
+APP_CONTAINER2 := app2
+APP_PORT1 := 8080
+APP_PORT2 := 8081
+
+NETWORK_NAME := demo-net
+
+ifneq (,$(wildcard ./.env))
+    include .env
+    export
+endif
 
 .PHONY: build start stop restart status clean logs \
         start-db stop-db restart-db \
@@ -24,7 +26,7 @@ export
 
 build:
 	@echo "Building application image with Podman..."
-	podman build -t $(APP_IMAGE_NAME) ./app/
+	podman build -t $(APP_IMAGE_NAME) .
 
 create-network:
 	@echo "Creating network if not exists..."

@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.codecool.demo"},{"l":"com.codecool.demo.controller"},{"l":"com.codecool.demo.dto"},{"l":"com.codecool.demo.exception"},{"l":"com.codecool.demo.model"},{"l":"com.codecool.demo.repository"},{"l":"com.codecool.demo.service"},{"l":"com.codecool.demo.util"}];updateSearchResults();
