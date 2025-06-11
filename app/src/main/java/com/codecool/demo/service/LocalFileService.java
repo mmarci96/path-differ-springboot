@@ -3,6 +3,7 @@ package com.codecool.demo.service;
 import com.codecool.demo.dto.DiffResponseDTO;
 import com.codecool.demo.dto.FileEntryDTO;
 import com.codecool.demo.dto.HistoryEntryDTO;
+import com.codecool.demo.exception.LocalFileNotFoundException;
 import com.codecool.demo.model.DiffRequest;
 import com.codecool.demo.model.Directory;
 import com.codecool.demo.model.LocalFile;
@@ -93,7 +94,7 @@ public class LocalFileService {
      * @param pathB Absolute path to second directory/file
      * @return {@link DiffResponseDTO} containing: - Base paths compared - Files unique to each
      *     location - Files common to both locations (with matching sizes)
-     * @throws FileSystemAccessException If paths are invalid/unreadable (handled by fileReader)
+     * @throws LocalFileNotFoundException If paths are invalid/unreadable (handled by fileReader)
      */
     @Transactional(rollbackFor = Exception.class)
     public DiffResponseDTO getDiffHandler(String username, String pathA, String pathB) {

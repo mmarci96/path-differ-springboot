@@ -39,3 +39,8 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+javadoc {
+    failOnError = false
+    options.addStringOption('Xdoclint:none', '-quiet') 
+}
