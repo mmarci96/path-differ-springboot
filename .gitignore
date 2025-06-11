@@ -37,4 +37,6 @@ out/
 .vscode/
 .env
 
+pgdata
+
 src/main/resources/static/doc/
