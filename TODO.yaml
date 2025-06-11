@@ -1,0 +1,7 @@
+static-files-serving:
+  gitignore
+  build during contenarization
+  
+move-app
+
+use .env.sample if .env not available

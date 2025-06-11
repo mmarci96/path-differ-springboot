@@ -10,6 +10,8 @@ COPY settings.gradle .
 COPY src ./src
 
 RUN ./gradlew clean build
+RUN ./gradlew javadoc
+COPY ./build/docs/ ./src/main/resources/static/doc
 
 FROM docker.io/library/eclipse-temurin:17-jdk-alpine
 
