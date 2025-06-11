@@ -14,8 +14,10 @@ APP_PORT2 := 8081
 
 NETWORK_NAME := demo-net
 
-include .env
-export
+ifneq (,$(wildcard ./.env))
+    include .env
+    export
+endif
 
 .PHONY: build start stop restart status clean logs \
         start-db stop-db restart-db \
