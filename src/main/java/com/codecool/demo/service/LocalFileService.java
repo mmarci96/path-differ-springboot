@@ -98,7 +98,8 @@ public class LocalFileService {
      * @throws LocalFileNotFoundException If paths are invalid/unreadable (handled by fileReader)
      */
     @Transactional(rollbackFor = Exception.class)
-    public DiffResponseDTO getDiffHandler(String username, String pathA, String pathB) {
+    public DiffResponseDTO getDiffHandler(String username, String pathA, String pathB)
+            throws LocalFileNotFoundException {
         LocalFile localFileA = fileReader.readFileTree(pathA);
         LocalFile localFileB = fileReader.readFileTree(pathB);
         saveFiles(localFileA);
