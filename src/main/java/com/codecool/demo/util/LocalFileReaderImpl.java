@@ -29,7 +29,7 @@ public class LocalFileReaderImpl implements LocalFileReader {
      * @throws LocalFileNotFoundException if path doesn't exist
      */
     @Override
-    public LocalFile readFileTree(String path) {
+    public LocalFile readFileTree(String path) throws LocalFileNotFoundException {
         File file = new File(path);
         if (!file.exists()) {
             throw new LocalFileNotFoundException("No file at: " + path);
